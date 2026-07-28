@@ -469,9 +469,14 @@
                 <p class="text-gray-500 text-sm text-center sm:text-left">
                     © <span id="currentYear"></span> Trade Fox. Todos los derechos reservados.
                 </p>
-                <p class="text-gray-500 text-xs">
-                    Hecho con 🦊 y <span class="text-fox-orange">pasión gamer</span>
-                </p>
+                <div class="flex items-center gap-3">
+                    <p class="text-gray-500 text-xs">
+                        Hecho con 🦊 y <span class="text-fox-orange">pasión gamer</span>
+                    </p>
+                    <a href="admin.html" class="text-gray-600 hover:text-gray-400 transition-colors" title="Admin" aria-label="Panel de administración">
+                        <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </footer>
@@ -575,7 +580,6 @@
         }
 
         // ===== Renderizado de filtros =====
-        const categories = ['Todos', ...new Set(products.map(p => p.category))];
         const filtersContainer = document.getElementById('filters');
         let activeCategory = 'Todos';
 
@@ -588,6 +592,7 @@
         };
 
         function renderFilters() {
+            const categories = ['Todos', ...new Set(products.map(p => p.category))];
             filtersContainer.innerHTML = '';
             categories.forEach(cat => {
                 const btn = document.createElement('button');
