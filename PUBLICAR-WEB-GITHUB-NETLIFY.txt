@@ -1,0 +1,216 @@
+===================================================================
+  TRADE FOX 🦊  —  GUÍA PARA PUBLICAR LA WEB EN INTERNET
+  (GitHub + Netlify con publicación AUTOMÁTICA)
+===================================================================
+
+¿QUÉ VAS A LOGRAR?
+- Un enlace público tipo:  https://tradefox.netlify.app
+- Publicación AUTOMÁTICA: cada vez que cambies el código,
+  la web se actualiza sola en internet. ¡Sin esfuerzo!
+- Tu amigo sigue editando SOLO los productos desde Google
+  Sheets (ver COMO-USAR-GOOGLE-SHEETS.txt).
+
+¿CÓMO FUNCIONA EL "MAGIA" DE LA PUBLICACIÓN AUTOMÁTICA?
+
+   Tú editas    →   GitHub    →   Netlify    →   Web pública
+   index.html        (guarda)     (publica)      tradefox.netlify.app
+
+Tú solo guardas cambios en GitHub. El resto es automático.
+
+
+================================================================
+PASO 0: INSTALAR GIT (una sola vez)
+================================================================
+Git es el programa que conecta tu PC con GitHub.
+
+1. Entra a:  https://git-scm.com/download/win
+2. Descarga "64-bit Git for Windows Setup".
+3. Ejecuta el instalador.
+4. Durante la instalación: dale a "Siguiente" en TODOS los pasos
+   con las opciones por defecto (NO cambies nada).
+5. Al terminar, REINICIA el equipo (importante).
+
+Para verificar que se instaló:
+   - Abre "Símbolo del sistema" (cmd)
+   - Escribe:  git --version
+   - Debe aparecer algo como:  git version 2.43.0.windows.1
+
+
+================================================================
+PASO 1: CREAR CUENTA EN GITHUB (gratis)
+================================================================
+1. Entra a:  https://github.com/signup
+2. Crea una cuenta con tu correo.
+   - Username sugerido:  tu nombre o "tradefox"
+   - Plan: Free (gratis)
+
+
+================================================================
+PASO 2: CREAR EL REPOSITORIO EN GITHUB
+================================================================
+1. Ya logueado, ve a:  https://github.com/new
+2. Rellena:
+   - Repository name:  tradefox
+   - Description:  Landing page Trade Fox
+   - Marca:  Public
+   - NO marques "Add a README" (ya lo tienes)
+   - NO añadas .gitignore (ya lo tienes)
+3. Pulsa "Create repository".
+
+Verás una página con comandos. NO los cierres, los usaremos luego.
+
+
+================================================================
+PASO 3: SUBIR LOS ARCHIVOS A GITHUB
+================================================================
+Abre "Símbolo del sistema" (cmd) en Windows y ejecuta
+los comandos siguientes, EN ORDEN.
+
+--- 3.1. Entra a la carpeta del proyecto ---
+   cd "E:\GLM\Pagina TradeFox"
+
+--- 3.2. Configura tu nombre y correo (una sola vez en la vida) ---
+   git config --global user.name "TU_NOMBRE"
+   git config --global user.email "TU_CORREO@gmail.com"
+   (cambia TU_NOMBRE y TU_CORREO por los reales)
+
+--- 3.3. Inicializa Git en la carpeta ---
+   git init
+   git branch -M main
+
+--- 3.4. Añade todos los archivos ---
+   git add .
+
+--- 3.5. Haz tu primer "commit" (guardar versión) ---
+   git commit -m "Primera versión de Trade Fox"
+
+--- 3.6. Conecta tu carpeta con GitHub ---
+   (Copia el enlace de tu repositorio en GitHub, será algo como
+    https://github.com/TU_USUARIO/tradefox.git)
+   git remote add origin https://github.com/TU_USUARIO/tradefox.git
+
+--- 3.7. Sube los archivos ---
+   git push -u origin main
+
+Al pulsar Enter te pedirá usuario y contraseña.
+¡IMPORTANTE! GitHub ya NO acepta tu contraseña normal. Te pedirá
+un "Personal Access Token". Para crearlo:
+
+   a) Ve a:  https://github.com/settings/tokens
+   b) "Generate new token" → "Generate new token (classic)"
+   c) Note:  Trade Fox publish
+   d) Expiration:  90 days  (o el que prefieras)
+   e) Marca el checkbox:  repo  (todo el bloque)
+   f) Generate token → COPIA el código (lo verás UNA sola vez)
+   g) Cuando Git te pida contraseña, PEGA ESE TOKEN.
+
+
+¡Listo! Si vas a tu repositorio en GitHub verás todos tus
+archivos subidos.
+
+
+================================================================
+PASO 4: CONECTAR NETLIFY CON GITHUB
+================================================================
+Netlify es el hosting gratuito que publica tu web.
+
+1. Entra a:  https://app.netlify.com/start
+2. Pulsa "GitHub" para conectar (autoriza a Netlify).
+3. Busca y selecciona tu repositorio:  tradefox
+4. En la pantalla de configuración, deja todo COMO ESTÁ:
+   - Branch to deploy:  main
+   - Build command:  (vacío)
+   - Publish directory:  .   (un punto)
+5. Pulsa "Deploy site".
+
+¡EN 1-2 MINUTOS TU WEB ESTARÁ EN INTERNET! 🎉
+Netlify te dará un enlace tipo:  https://amazing-fox-1234.netlify.app
+
+
+================================================================
+PASO 5: PONERLE UN NOMBRE BONITO AL ENLACE
+================================================================
+El enlace inicial es aleatorio. Cámbialo por algo memorable:
+
+1. En Netlify, ve a "Site settings" → "Change site name"
+2. Escribe:  tradefox
+3. Tu enlace quedará:  https://tradefox.netlify.app
+
+(¡Asegúrate de que el nombre esté libre!)
+
+
+================================================================
+🎉 ¡LISTO! ¿CÓMO EDITAR A PARTIR DE AHORA?
+================================================================
+
+┌─────────────────────────────────────────────────────────────┐
+│  TIPO DE CAMBIO          │  CÓMO HACERLO                    │
+├──────────────────────────┼──────────────────────────────────┤
+│  Añadir/editar PRODUCTOS │  Editar Google Sheets            │
+│  (lo más frecuente)      │  → automático, sin tocar nada    │
+├──────────────────────────┼──────────────────────────────────┤
+│  Cambiar textos, colores,│  Editar index.html + 3 comandos: │
+│  secciones, código       │                                  │
+│                          │    cd "E:\GLM\Pagina TradeFox"   │
+│                          │    git add .                     │
+│                          │    git commit -m "lo que cambie" │
+│                          │    git push                      │
+│                          │  → En 1 min Netlify publica solo │
+└──────────────────────────┴──────────────────────────────────┘
+
+
+================================================================
+🛠️ COMANDOS PARA ACTUALIZAR LA WEB (plantilla para copiar)
+================================================================
+Cada vez que cambies algo del index.html, abre cmd y ejecuta:
+
+   cd "E:\GLM\Pagina TradeFox"
+   git add .
+   git commit -m "Actualización: [describe qué cambiaste]"
+   git push
+
+Ejemplo:
+   git commit -m "Actualización: cambié el color del botón"
+
+
+================================================================
+❓ PROBLEMAS FRECUENTES
+================================================================
+
+❌ "git no se reconoce como comando"
+   → Reinicia el equipo tras instalar Git (PASO 0).
+
+❌ "Al hacer git push me pide contraseña y no la acepta"
+   → Usa un Personal Access Token, no tu contraseña (PASO 3.7).
+
+❌ "Hice git push pero la web no se actualiza"
+   → Espera 1-2 minutos. Revisa en Netlify → "Deploys" si hay
+     errores. Comprueba que hiciste push a la rama "main".
+
+❌ "Quiero editar la web desde otro PC"
+   → Instala Git en esa PC, clona el repo
+     (git clone https://github.com/TU_USUARIO/tradefox.git),
+     edita, y vuelve a hacer add/commit/push.
+
+❌ "Mi amigo no puede editar desde Google Sheets"
+   → Revisa COMO-USAR-GOOGLE-SHEETS.txt
+
+❌ "Quiero cambiar el enlace a algo como tradefox.com"
+   → Compra el dominio (~$10-15/año en Namecheap, GoDaddy...)
+     y enlázalo en Netlify → "Domain settings" → "Add domain".
+
+
+================================================================
+📦 ESTRUCTURA FINAL DEL PROYECTO
+================================================================
+   E:\GLM\Pagina TradeFox\
+   ├── index.html                      ← tu web
+   ├── netlify.toml                    ← config Netlify (auto)
+   ├── .gitignore                      ← ignora archivos
+   ├── README.md                       ← info del proyecto
+   ├── COMO-USAR-GOOGLE-SHEETS.txt     ← guía productos
+   └── PUBLICAR-WEB-GITHUB-NETLIFY.txt ← ESTA guía
+
+===================================================================
+  ¿Dudas? Sigue esta guía con calma, paso a paso. 🦊🚀
+===================================================================

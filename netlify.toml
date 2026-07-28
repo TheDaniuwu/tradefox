@@ -1,0 +1,33 @@
+# ============================================================
+#  Configuración de Netlify para Trade Fox 🦊
+#  Este archivo le dice a Netlify cómo publicar la web.
+# ============================================================
+
+[build]
+  # Carpeta que se publica (la raíz del proyecto)
+  publish = "."
+  # No hay proceso de build porque es HTML puro
+  command = ""
+
+# Configuración del sitio
+# El nombre del sitio se define en el panel de Netlify,
+# no aquí. Ejemplo: tradefox.netlify.app
+
+# Redirecciones y cabeceras útiles
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache de imágenes estáticas (mejora velocidad)
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"

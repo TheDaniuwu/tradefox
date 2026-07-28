@@ -1,0 +1,157 @@
+===================================================================
+  TRADE FOX 🦊  —  GUÍA PARA AÑADIR PRODUCTOS CON GOOGLE SHEETS
+===================================================================
+
+Esta guía te explica, PASO A PASO y SIN TOCAR CÓDIGO, cómo
+gestionar los productos de tu tienda desde una hoja de cálculo
+de Google (como si fuera Excel). Cualquier cambio que hagas en
+la hoja se verá REFLEJADO EN LA WEB automáticamente.
+
+
+----------------------------------------------------------------
+PASO 1: CREAR LA HOJA DE CÁLCULO
+----------------------------------------------------------------
+1. Entra a:  https://sheets.new
+   (se abrirá una hoja de cálculo nueva automáticamente).
+
+2. Cambia el nombre de la hoja (arriba a la izquierda) a:
+       Productos Trade Fox
+
+3. IMPORTANTE — Cambia el nombre de la PESTAÑA inferior
+   (que por defecto dice "Hoja 1") a:
+       Productos
+   Para hacerlo: doble clic sobre "Hoja 1" → escribe "Productos" → Enter.
+
+
+----------------------------------------------------------------
+PASO 2: PONER LOS ENCABEZADOS
+----------------------------------------------------------------
+En la FILA 1, escribe estos títulos EXACTOS (uno por columna):
+
+    |     A     |     B      |     C      |    D    |     E     |
+    |-----------|------------|------------|---------|-----------|
+    |  Titulo   | Categoria  |  Estado    |  Precio |   Imagen  |
+
+- A1 → Titulo
+- B1 → Categoria
+- C1 → Estado
+- D1 → Precio
+- E1 → Imagen
+
+
+----------------------------------------------------------------
+PASO 3: AÑADIR TUS PRODUCTOS
+----------------------------------------------------------------
+A partir de la FILA 2, pon un producto por fila. Ejemplo:
+
+    | Titulo              | Categoria      | Estado     | Precio    | Imagen (URL)                                   |
+    |---------------------|----------------|------------|-----------|------------------------------------------------|
+    | PlayStation 5 Slim  | Consolas       | Nuevo      | S/ 2,499  | https://...imagen.jpg                          |
+    | DualSense PS5       | Mandos         | Nuevo      | S/ 299    | https://...imagen.jpg                          |
+    | God of War Ragnarök | Juegos Físicos | Seminuevo | S/ 189    | https://...imagen.jpg                          |
+
+REGLAS IMPORTANTES:
+- "Categoria" debe ser una de estas (escríbela IGUAL):
+      Consolas / Juegos Físicos / Mandos / Accesorios
+- "Estado" debe ser:  Nuevo  o  Seminuevo
+- "Precio" puede llevar el símbolo "S/" o solo el número.
+- "Imagen" debe ser un ENLACE (URL) que termine en .jpg o .png.
+  (Si dejas la imagen vacía, saldrá una imagen por defecto).
+
+
+----------------------------------------------------------------
+PASO 4: CONSEGUIR UNA URL DE IMAGEN
+----------------------------------------------------------------
+Para la columna "Imagen", necesitas el ENLACE directo a la foto:
+
+1. Sube la foto a Google Drive (o usa Imgur, sube la imagen).
+2. Si usas Drive: clic derecho en la foto → "Compartir" →
+   ponlo como "Cualquiera con el enlace" → Copiar enlace.
+3. Pega ese enlace en la columna "Imagen".
+
+NOTA: Las fotos quedan mejor si son cuadradas o apaisadas
+(aprox. 600x400 px).
+
+
+----------------------------------------------------------------
+PASO 5: HACER LA HOJA PÚBLICA
+----------------------------------------------------------------
+La web necesita poder LEER la hoja, así que hay que hacerla pública:
+
+1. En la hoja, ve a:  Archivo  →  Compartir  →  Publicar en la web.
+2. Selecciona la pestaña "Productos".
+3. Marca "Volver a publicar automáticamente" (recomendado).
+4. Pulsa "Publicar" y confirma.
+
+¡OJO! La información de los productos ya es pública para los
+visitantes de la web, así que NO pongas datos personales ni
+contraseñas en esta hoja.
+
+
+----------------------------------------------------------------
+PASO 6: COPIAR EL ID DE LA HOJA
+----------------------------------------------------------------
+1. Mira la BARRA DE DIRECCIONES del navegador con la hoja abierta.
+   Verás algo así:
+
+   https://docs.google.com/spreadsheets/d/1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9Qr0/edit#gid=0
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                            ESTO ES EL ID
+
+2. El ID es la parte LARGA entre "/d/" y "/edit".
+   En el ejemplo sería:   1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9Qr0
+
+3. Copia ese ID.
+
+
+----------------------------------------------------------------
+PASO 7: PEGAR EL ID EN LA WEB
+----------------------------------------------------------------
+1. Abre el archivo  index.html  con el Bloc de Notas
+   (clic derecho → Abrir con → Bloc de Notas).
+
+2. Busca (Ctrl + B) esta línea:
+
+       const SHEET_ID = '';
+
+3. Pega tu ID DENTRO de las comillas. Quedará así:
+
+       const SHEET_ID = '1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9Qr0';
+
+4. Guarda el archivo (Ctrl + G) y cierra.
+
+5. Abre index.html en tu navegador. ¡Listo! Los productos
+   que pusiste en la hoja aparecerán en la web.
+
+
+----------------------------------------------------------------
+¿CÓMO AÑADIR O QUITAR PRODUCTOS DESPUÉS?
+----------------------------------------------------------------
+- Para AÑADIR:  solo añade una fila nueva en la hoja de cálculo.
+                 ¡Aparecerá sola en la web!
+- Para EDITAR:  cambia el texto/precio de cualquier celda.
+- Para QUITAR:  borra la fila completa.
+- ¡No necesitas volver a tocar el index.html nunca más!
+
+
+----------------------------------------------------------------
+PROBLEMAS FRECUENTES
+----------------------------------------------------------------
+❌ "La web sale con los productos de ejemplo, no los míos"
+   → Tu SHEET_ID está vacío o mal pegado. Repasa el PASO 7.
+
+❌ "La hoja dice error al cargar"
+   → La hoja no es pública (PASO 5) o el nombre de la pestaña
+     no es exactamente "Productos" (PASO 1).
+
+❌ "Un producto no aparece"
+   → Probablemente la columna "Titulo" quedó vacía, o la
+     "Categoria" no coincide con las 4 permitidas.
+
+❌ "La imagen no carga"
+   → El enlace no es directo a la imagen (no termina en .jpg)
+     o la foto no es pública.
+
+===================================================================
+  ¿Dudas? Revisa esta guía paso a paso con calma. 🦊🎮
+===================================================================
