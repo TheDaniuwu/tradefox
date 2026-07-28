@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Trade Fox 🦊 | Panel de Administración</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Custom Config (igual que index.html) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'fox-dark': '#0d1117',
+                        'fox-darker': '#080b10',
+                        'fox-card': '#161b22',
+                        'fox-card-light': '#1f2630',
+                        'fox-orange': '#FF6B00',
+                        'fox-orange-light': '#ff8533',
+                        'fox-orange-dark': '#cc5500',
+                        'fox-gray': '#8b949e',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0d1117; }
+        ::-webkit-scrollbar-thumb { background: #FF6B00; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff8533; }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #FF6B00 0%, #ff8533 50%, #ffb380 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Modal backdrop */
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed rgba(255, 107, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .upload-zone:hover, .upload-zone.drag-over {
+            border-color: #FF6B00;
+            background: rgba(255, 107, 0, 0.05);
+        }
+
+        /* Toast */
+        .toast {
+            animation: slideIn 0.4s ease-out, fadeOut 0.4s ease-in 2.6s forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Table row hover */
+        .product-row:hover {
+            background: rgba(255, 107, 0, 0.05);
+        }
+
+        /* Spinner */
+        .spinner {
+            border: 3px solid rgba(255, 107, 0, 0.2);
+            border-top-color: #FF6B00;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body class="bg-fox-dark text-gray-200 font-sans antialiased min-h-screen">
+
+    <!-- ====================== HEADER ====================== -->
+    <header class="sticky top-0 z-40 bg-fox-dark/80 backdrop-blur-lg border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 rounded-xl bg-fox-orange flex items-center justify-center text-2xl shadow-lg shadow-fox-orange/40 group-hover:rotate-12 transition-transform duration-300">
+                        🦊
+                    </div>
+                    <div class="flex flex-col leading-none">
+                        <span class="text-xl font-extrabold text-white tracking-tight">Trade <span class="text-fox-orange">Fox</span></span>
+                        <span class="text-[10px] text-gray-400 tracking-widest uppercase">Admin Panel</span>
+                    </div>
+                </a>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-3">
+                    <a href="index.html"
+                       class="inline-flex items-center gap-2 text-gray-400 hover:text-white text-sm font-medium transition-colors">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Ver tienda</span>
+                    </a>
+                    <button id="btnConfig"
+                            class="inline-flex items-center gap-2 text-gray-400 hover:text-fox-orange text-sm font-medium transition-colors p-2 rounded-lg hover:bg-white/5">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Configuración</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ====================== MAIN CONTENT ====================== -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Connection status banner -->
+        <div id="connectionBanner" class="hidden mb-6 rounded-xl p-4 text-sm font-medium flex items-center gap-3">
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <div class="bg-fox-card border border-white/5 rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-fox-orange/10 flex items-center justify-center">
+                        <i data-lucide="package" class="w-5 h-5 text-fox-orange"></i>
+                    </div>
+                </div>
+                <div id="statTotal" class="text-2xl font-extrabold text-white">0</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide">Total Productos</div>
+            </div>
+            <div class="bg-fox-card border border-white/5 rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-fox-orange/10 flex items-center justify-center">
+                        <i data-lucide="gamepad-2" class="w-5 h-5 text-fox-orange"></i>
+                    </div>
+                </div>
+                <div id="statConsolas" class="text-2xl font-extrabold text-white">0</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide">Consolas</div>
+            </div>
+            <div class="bg-fox-card border border-white/5 rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-fox-orange/10 flex items-center justify-center">
+                        <i data-lucide="disc" class="w-5 h-5 text-fox-orange"></i>
+                    </div>
+                </div>
+                <div id="statJuegos" class="text-2xl font-extrabold text-white">0</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide">Juegos Físicos</div>
+            </div>
+            <div class="bg-fox-card border border-white/5 rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-fox-orange/10 flex items-center justify-center">
+                        <i data-lucide="joystick" class="w-5 h-5 text-fox-orange"></i>
+                    </div>
+                </div>
+                <div id="statMandos" class="text-2xl font-extrabold text-white">0</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide">Mandos</div>
+            </div>
+            <div class="bg-fox-card border border-white/5 rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-fox-orange/10 flex items-center justify-center">
+                        <i data-lucide="headphones" class="w-5 h-5 text-fox-orange"></i>
+                    </div>
+                </div>
+                <div id="statAccesorios" class="text-2xl font-extrabold text-white">0</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide">Accesorios</div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <!-- Search -->
+                <div class="relative flex-1 sm:flex-initial">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar producto..."
+                           class="w-full sm:w-72 pl-10 pr-4 py-2.5 bg-fox-card border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all" />
+                </div>
+                <!-- Filter -->
+                <select id="filterCategory"
+                        class="px-4 py-2.5 bg-fox-card border border-white/10 rounded-xl text-sm text-gray-300 focus:outline-none focus:border-fox-orange/50 transition-all cursor-pointer">
+                    <option value="Todos">Todas las categorías</option>
+                    <option value="Consolas">Consolas</option>
+                    <option value="Juegos Físicos">Juegos Físicos</option>
+                    <option value="Mandos">Mandos</option>
+                    <option value="Accesorios">Accesorios</option>
+                </select>
+            </div>
+            <button id="btnAddProduct"
+                    class="inline-flex items-center gap-2 bg-fox-orange hover:bg-fox-orange-light text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shadow-lg shadow-fox-orange/20 hover:scale-105 whitespace-nowrap">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                Agregar Producto
+            </button>
+        </div>
+
+        <!-- Products Table -->
+        <div class="bg-fox-card border border-white/5 rounded-2xl overflow-hidden">
+            <!-- Loading state -->
+            <div id="loadingState" class="flex items-center justify-center py-20">
+                <div class="spinner"></div>
+                <span class="ml-3 text-gray-400">Cargando productos...</span>
+            </div>
+
+            <!-- Table -->
+            <div id="tableContainer" class="hidden overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-white/5">
+                            <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4">Imagen</th>
+                            <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4">Producto</th>
+                            <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4 hidden md:table-cell">Categoría</th>
+                            <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4 hidden sm:table-cell">Estado</th>
+                            <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4">Precio</th>
+                            <th class="text-right text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <!-- Rows generated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty state -->
+            <div id="emptyState" class="hidden flex flex-col items-center justify-center py-20 text-center px-4">
+                <div class="text-6xl mb-4">📦</div>
+                <p class="text-gray-400 text-lg mb-2">No hay productos aún</p>
+                <p class="text-gray-500 text-sm">Haz clic en "Agregar Producto" para empezar</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ====================== MODAL: FORMULARIO PRODUCTO ====================== -->
+    <div id="productModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="bg-fox-card border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
+                <h2 id="modalTitle" class="text-lg font-bold text-white">Agregar Producto</h2>
+                <button id="btnCloseModal" class="text-gray-400 hover:text-white transition-colors p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <form id="productForm" class="p-6 space-y-5">
+                <!-- Título -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Título del producto *</label>
+                    <input type="text" id="fieldTitle" required placeholder="Ej: PlayStation 5 Slim"
+                           class="w-full px-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all" />
+                </div>
+
+                <!-- Categoría y Estado -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1.5">Categoría *</label>
+                        <select id="fieldCategory" required
+                                class="w-full px-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-fox-orange/50 transition-all cursor-pointer">
+                            <option value="Consolas">Consolas</option>
+                            <option value="Juegos Físicos">Juegos Físicos</option>
+                            <option value="Mandos">Mandos</option>
+                            <option value="Accesorios">Accesorios</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1.5">Estado *</label>
+                        <select id="fieldCondition" required
+                                class="w-full px-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-fox-orange/50 transition-all cursor-pointer">
+                            <option value="Nuevo">Nuevo</option>
+                            <option value="Seminuevo">Seminuevo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Precio -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Precio *</label>
+                    <input type="text" id="fieldPrice" required placeholder="Ej: S/ 2,499"
+                           class="w-full px-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all" />
+                </div>
+
+                <!-- Imagen -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Imagen del producto</label>
+                    <!-- Upload Zone -->
+                    <div id="uploadZone" class="upload-zone rounded-xl p-6 text-center cursor-pointer relative">
+                        <div id="uploadPlaceholder">
+                            <i data-lucide="image-plus" class="w-10 h-10 text-fox-orange/60 mx-auto mb-2"></i>
+                            <p class="text-sm text-gray-400">Arrastra una imagen aquí o <span class="text-fox-orange font-medium">haz clic para seleccionar</span></p>
+                            <p class="text-xs text-gray-500 mt-1">Se subirá automáticamente a Imgur</p>
+                        </div>
+                        <!-- Preview -->
+                        <div id="uploadPreview" class="hidden">
+                            <img id="previewImage" src="" alt="Preview" class="max-h-48 mx-auto rounded-lg object-cover" />
+                            <button type="button" id="btnRemoveImage"
+                                    class="mt-2 text-xs text-red-400 hover:text-red-300 transition-colors">
+                                Quitar imagen
+                            </button>
+                        </div>
+                        <!-- Uploading indicator -->
+                        <div id="uploadSpinner" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-fox-dark/80 rounded-xl">
+                            <div class="spinner mb-2"></div>
+                            <p class="text-sm text-gray-400">Subiendo imagen...</p>
+                        </div>
+                        <input type="file" id="fileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                    </div>
+                    <!-- Manual URL fallback -->
+                    <div class="mt-3">
+                        <button type="button" id="btnToggleUrl" class="text-xs text-gray-500 hover:text-fox-orange transition-colors">
+                            O pega un enlace de imagen directamente
+                        </button>
+                        <div id="urlInputContainer" class="hidden mt-2">
+                            <input type="url" id="fieldImageUrl" placeholder="https://ejemplo.com/imagen.jpg"
+                                   class="w-full px-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden field for image URL (what gets saved) -->
+                <input type="hidden" id="fieldImage" value="" />
+
+                <!-- Actions -->
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="button" id="btnCancelForm"
+                            class="px-5 py-2.5 text-sm font-medium text-gray-400 hover:text-white transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnSubmitForm"
+                            class="inline-flex items-center gap-2 bg-fox-orange hover:bg-fox-orange-light text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-all shadow-lg shadow-fox-orange/20">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span id="submitText">Guardar Producto</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ====================== MODAL: CONFIRMAR ELIMINACIÓN ====================== -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="bg-fox-card border border-white/10 rounded-2xl w-full max-w-sm shadow-2xl p-6 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
+                <i data-lucide="trash-2" class="w-8 h-8 text-red-400"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">¿Eliminar producto?</h3>
+            <p class="text-sm text-gray-400 mb-6">Esta acción no se puede deshacer. El producto se eliminará de la hoja de cálculo.</p>
+            <div class="flex items-center justify-center gap-3">
+                <button id="btnCancelDelete"
+                        class="px-5 py-2.5 text-sm font-medium text-gray-400 hover:text-white border border-white/10 rounded-xl transition-colors">
+                    Cancelar
+                </button>
+                <button id="btnConfirmDelete"
+                        class="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-all">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================== MODAL: CONFIGURACIÓN ====================== -->
+    <div id="configModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="bg-fox-card border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i data-lucide="settings" class="w-5 h-5 text-fox-orange"></i>
+                    Configuración
+                </h2>
+                <button id="btnCloseConfig" class="text-gray-400 hover:text-white transition-colors p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-6">
+                <!-- Google Sheets Config -->
+                <div class="bg-fox-darker rounded-xl p-5 border border-white/5">
+                    <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                        <i data-lucide="table" class="w-4 h-4 text-fox-orange"></i>
+                        Google Sheets
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-4">ID de la hoja de cálculo de Google Sheets</p>
+                    <input type="text" id="configSheetId" placeholder="Ej: 1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9Qr0"
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono" />
+                </div>
+
+                <!-- Apps Script URL -->
+                <div class="bg-fox-darker rounded-xl p-5 border border-white/5">
+                    <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                        <i data-lucide="code" class="w-4 h-4 text-fox-orange"></i>
+                        Google Apps Script URL
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-4">URL del endpoint de Apps Script para guardar cambios</p>
+                    <input type="url" id="configScriptUrl" placeholder="https://script.google.com/macros/s/..."
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono" />
+                    <p class="text-xs text-gray-600 mt-2">Instrucciones para crear el Apps Script en la guía de configuración.</p>
+                </div>
+
+                <!-- Imgur Config -->
+                <div class="bg-fox-darker rounded-xl p-5 border border-white/5">
+                    <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                        <i data-lucide="image" class="w-4 h-4 text-fox-orange"></i>
+                        Imgur (subida de imágenes)
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-4">Client ID de Imgur para subir imágenes automáticamente</p>
+                    <input type="text" id="configImgurId" placeholder="Ej: abc123def456"
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono" />
+                    <p class="text-xs text-gray-600 mt-2">Regístrate en <a href="https://api.imgur.com/oauth2/addclient" target="_blank" class="text-fox-orange hover:underline">api.imgur.com</a> para obtener tu Client ID.</p>
+                </div>
+
+                <!-- Save config -->
+                <div class="flex items-center justify-between">
+                    <p class="text-xs text-gray-500">Los datos se guardan localmente en tu navegador.</p>
+                    <button id="btnSaveConfig"
+                            class="inline-flex items-center gap-2 bg-fox-orange hover:bg-fox-orange-light text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shadow-lg shadow-fox-orange/20">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================== TOAST CONTAINER ====================== -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ====================== JAVASCRIPT ====================== -->
+    <script>
+    (() => {
+        'use strict';
+
+        // ===== State =====
+        let products = [];
+        let editingId = null;    // null = nuevo producto, número = editando existente
+        let deletingId = null;
+        let currentImage = '';
+
+        const CATEGORIES = ['Consolas', 'Juegos Físicos', 'Mandos', 'Accesorios'];
+        const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&h=400&fit=crop';
+
+        // ===== LocalStorage Config =====
+        function getConfig() {
+            return {
+                sheetId: localStorage.getItem('tf_sheet_id') || '',
+                scriptUrl: localStorage.getItem('tf_script_url') || '',
+                imgurId: localStorage.getItem('tf_imgur_id') || '',
+            };
+        }
+
+        function saveConfig(cfg) {
+            localStorage.setItem('tf_sheet_id', cfg.sheetId);
+            localStorage.setItem('tf_script_url', cfg.scriptUrl);
+            localStorage.setItem('tf_imgur_id', cfg.imgurId);
+        }
+
+        function loadConfigUI() {
+            const cfg = getConfig();
+            document.getElementById('configSheetId').value = cfg.sheetId;
+            document.getElementById('configScriptUrl').value = cfg.scriptUrl;
+            document.getElementById('configImgurId').value = cfg.imgurId;
+        }
+
+        // ===== Toast Notifications =====
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const colors = {
+                success: 'bg-green-500/90 border-green-400/50 text-white',
+                error: 'bg-red-500/90 border-red-400/50 text-white',
+                info: 'bg-fox-orange/90 border-fox-orange/50 text-white',
+            };
+            const icons = {
+                success: 'check-circle',
+                error: 'alert-circle',
+                info: 'info',
+            };
+            const toast = document.createElement('div');
+            toast.className = `toast pointer-events-auto flex items-center gap-2 px-5 py-3 rounded-xl border text-sm font-medium shadow-xl ${colors[type]}`;
+            toast.innerHTML = `<i data-lucide="${icons[type]}" class="w-4 h-4 flex-shrink-0"></i> ${message}`;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ===== Connection Banner =====
+        function showConnectionBanner(type, message) {
+            const banner = document.getElementById('connectionBanner');
+            const colors = {
+                warning: 'bg-yellow-500/10 border border-yellow-500/30 text-yellow-300',
+                error: 'bg-red-500/10 border border-red-500/30 text-red-300',
+                success: 'bg-green-500/10 border border-green-500/30 text-green-300',
+                none: '',
+            };
+            const icons = {
+                warning: 'alert-triangle',
+                error: 'alert-circle',
+                success: 'check-circle',
+                none: '',
+            };
+            banner.className = `mb-6 rounded-xl p-4 text-sm font-medium flex items-center gap-3 ${colors[type]}`;
+            if (type === 'none') {
+                banner.classList.add('hidden');
+            } else {
+                banner.classList.remove('hidden');
+                banner.innerHTML = `<i data-lucide="${icons[type]}" class="w-5 h-5 flex-shrink-0"></i> ${message}`;
+                lucide.createIcons();
+            }
+        }
+
+        function checkConnection() {
+            const cfg = getConfig();
+            if (!cfg.sheetId) {
+                showConnectionBanner('warning', 'No hay hoja de Google Sheets configurada. Ve a Configuración para conectar tu hoja.');
+            } else if (!cfg.scriptUrl) {
+                showConnectionBanner('warning', 'Falta el URL de Apps Script. Sin este, los cambios no se guardarán en la hoja. Ve a Configuración.');
+            } else {
+                showConnectionBanner('success', 'Conectado a Google Sheets. Los cambios se guardan automáticamente.');
+            }
+        }
+
+        // ===== Load Products from Google Sheets =====
+        async function loadProducts() {
+            const cfg = getConfig();
+            if (!cfg.sheetId) {
+                products = [];
+                renderAll();
+                return;
+            }
+
+            const url = `https://docs.google.com/spreadsheets/d/${cfg.sheetId}/gviz/tq?tqx=out:json&sheet=Productos`;
+
+            try {
+                const res = await fetch(url, { cache: 'no-store' });
+                if (!res.ok) throw new Error('Respuesta ' + res.status);
+                const text = await res.text();
+
+                const jsonStart = text.indexOf('{');
+                const jsonEnd = text.lastIndexOf('}');
+                if (jsonStart === -1) throw new Error('Formato inválido');
+                const data = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
+
+                const rows = data.table.rows;
+                if (!rows) throw new Error('No hay filas');
+
+                products = [];
+                rows.slice(1).forEach((row, idx) => {
+                    const cells = row.c || [];
+                    const title = cells[0]?.v?.toString().trim();
+                    if (!title) return;
+                    products.push({
+                        id: idx + 1,
+                        title,
+                        category: cells[1]?.v?.toString().trim() || 'Otros',
+                        condition: cells[2]?.v?.toString().trim() || 'Nuevo',
+                        price: cells[3]?.v?.toString().trim() || 'Consultar',
+                        image: cells[4]?.v?.toString().trim() || DEFAULT_IMAGE,
+                    });
+                });
+            } catch (err) {
+                console.warn('[Trade Fox Admin] Error cargando productos:', err);
+                showToast('Error al cargar productos. Verifica la configuración.', 'error');
+                products = [];
+            }
+            renderAll();
+        }
+
+        // ===== Save Products to Google Sheets (via Apps Script) =====
+        async function saveToSheet(productsData) {
+            const cfg = getConfig();
+            if (!cfg.scriptUrl) {
+                showToast('No hay URL de Apps Script configurado. Los cambios no se guardaron.', 'error');
+                return false;
+            }
+
+            try {
+                const payload = productsData.map(p => [p.title, p.category, p.condition, p.price, p.image]);
+                const res = await fetch(cfg.scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'save', data: payload }),
+                });
+                // mode: no-cors doesn't let us read the response, but it fired
+                return true;
+            } catch (err) {
+                console.warn('[Trade Fox Admin] Error guardando:', err);
+                showToast('Error al guardar en Google Sheets.', 'error');
+                return false;
+            }
+        }
+
+        // ===== Imgur Upload =====
+        async function uploadToImgur(file) {
+            const cfg = getConfig();
+            if (!cfg.imgurId) {
+                showToast('Falta el Client ID de Imgur. Puedes pegar la URL manualmente.', 'error');
+                return null;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await fetch('https://api.imgur.com/3/image', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Client-ID ' + cfg.imgurId },
+                    body: formData,
+                });
+                const data = await res.json();
+                if (data.success) {
+                    return data.data.link;
+                }
+                showToast('Error al subir imagen a Imgur.', 'error');
+                return null;
+            } catch (err) {
+                console.warn('[Trade Fox Admin] Error Imgur:', err);
+                showToast('Error al subir imagen a Imgur.', 'error');
+                return null;
+            }
+        }
+
+        // ===== Render Dashboard Stats =====
+        function renderStats() {
+            document.getElementById('statTotal').textContent = products.length;
+            document.getElementById('statConsolas').textContent = products.filter(p => p.category === 'Consolas').length;
+            document.getElementById('statJuegos').textContent = products.filter(p => p.category === 'Juegos Físicos').length;
+            document.getElementById('statMandos').textContent = products.filter(p => p.category === 'Mandos').length;
+            document.getElementById('statAccesorios').textContent = products.filter(p => p.category === 'Accesorios').length;
+        }
+
+        // ===== Render Products Table =====
+        function renderTable() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const category = document.getElementById('filterCategory').value;
+
+            let filtered = [...products];
+
+            if (category !== 'Todos') {
+                filtered = filtered.filter(p => p.category === category);
+            }
+            if (search) {
+                filtered = filtered.filter(p =>
+                    p.title.toLowerCase().includes(search) ||
+                    p.category.toLowerCase().includes(search) ||
+                    p.price.toLowerCase().includes(search)
+                );
+            }
+
+            const tbody = document.getElementById('productsTableBody');
+            const loadingState = document.getElementById('loadingState');
+            const tableContainer = document.getElementById('tableContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            loadingState.classList.add('hidden');
+
+            if (products.length === 0) {
+                tableContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tableContainer.classList.remove('hidden');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-12 text-gray-500">
+                            No se encontraron productos con esa búsqueda.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => {
+                const isNuevo = p.condition.toLowerCase() === 'nuevo';
+                const badgeClass = isNuevo
+                    ? 'bg-green-500/15 text-green-400'
+                    : 'bg-fox-orange/15 text-fox-orange';
+                return `
+                <tr class="product-row border-b border-white/5 transition-colors">
+                    <td class="px-5 py-3">
+                        <div class="w-12 h-12 rounded-lg overflow-hidden bg-fox-darker flex-shrink-0">
+                            <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover"
+                                 onerror="this.src='${DEFAULT_IMAGE}'" />
+                        </div>
+                    </td>
+                    <td class="px-5 py-3">
+                        <div class="font-semibold text-white">${escapeHtml(p.title)}</div>
+                        <div class="text-xs text-gray-500 md:hidden mt-0.5">${p.category}</div>
+                    </td>
+                    <td class="px-5 py-3 hidden md:table-cell">
+                        <span class="text-gray-400 text-sm">${p.category}</span>
+                    </td>
+                    <td class="px-5 py-3 hidden sm:table-cell">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                            ${p.condition}
+                        </span>
+                    </td>
+                    <td class="px-5 py-3">
+                        <span class="text-fox-orange font-bold">${escapeHtml(p.price)}</span>
+                    </td>
+                    <td class="px-5 py-3">
+                        <div class="flex items-center justify-end gap-2">
+                            <button onclick="window.adminEdit(${p.id})" title="Editar"
+                                    class="p-2 rounded-lg text-gray-400 hover:text-fox-orange hover:bg-fox-orange/10 transition-all">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="window.adminDelete(${p.id})" title="Eliminar"
+                                    class="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        function renderAll() {
+            renderStats();
+            renderTable();
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ===== Modal Management =====
+        function openModal() {
+            document.getElementById('productModal').classList.remove('hidden');
+            document.getElementById('productModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.add('hidden');
+            document.getElementById('productModal').classList.remove('flex');
+            document.body.style.overflow = '';
+            resetForm();
+        }
+
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.getElementById('deleteModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            document.getElementById('deleteModal').classList.remove('flex');
+            document.body.style.overflow = '';
+            deletingId = null;
+        }
+
+        function openConfigModal() {
+            document.getElementById('configModal').classList.remove('hidden');
+            document.getElementById('configModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            loadConfigUI();
+        }
+
+        function closeConfigModal() {
+            document.getElementById('configModal').classList.add('hidden');
+            document.getElementById('configModal').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        // ===== Form Management =====
+        function resetForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('fieldImage').value = '';
+            currentImage = '';
+            editingId = null;
+            document.getElementById('modalTitle').textContent = 'Agregar Producto';
+            document.getElementById('submitText').textContent = 'Guardar Producto';
+            resetUploadUI();
+        }
+
+        function resetUploadUI() {
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            document.getElementById('uploadPreview').classList.add('hidden');
+            document.getElementById('uploadSpinner').classList.add('hidden');
+            document.getElementById('previewImage').src = '';
+            document.getElementById('fileInput').value = '';
+        }
+
+        function fillForm(product) {
+            document.getElementById('fieldTitle').value = product.title;
+            document.getElementById('fieldCategory').value = product.category;
+            document.getElementById('fieldCondition').value = product.condition;
+            document.getElementById('fieldPrice').value = product.price;
+            document.getElementById('fieldImage').value = product.image;
+            currentImage = product.image;
+
+            // Show preview if has image
+            if (product.image && product.image !== DEFAULT_IMAGE) {
+                document.getElementById('uploadPlaceholder').classList.add('hidden');
+                document.getElementById('uploadPreview').classList.remove('hidden');
+                document.getElementById('previewImage').src = product.image;
+            } else {
+                resetUploadUI();
+            }
+        }
+
+        // ===== CRUD Operations =====
+        function addProduct() {
+            const title = document.getElementById('fieldTitle').value.trim();
+            const category = document.getElementById('fieldCategory').value;
+            const condition = document.getElementById('fieldCondition').value;
+            const price = document.getElementById('fieldPrice').value.trim();
+            let image = document.getElementById('fieldImage').value.trim() || document.getElementById('fieldImageUrl').value.trim() || DEFAULT_IMAGE;
+
+            if (!title) {
+                showToast('El título es obligatorio.', 'error');
+                return;
+            }
+
+            const newProduct = {
+                id: products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1,
+                title,
+                category,
+                condition,
+                price,
+                image,
+            };
+
+            products.push(newProduct);
+            saveToSheet(products).then(ok => {
+                if (ok) showToast('Producto agregado correctamente.');
+            });
+            closeModal();
+            renderAll();
+        }
+
+        function editProduct() {
+            const idx = products.findIndex(p => p.id === editingId);
+            if (idx === -1) return;
+
+            const title = document.getElementById('fieldTitle').value.trim();
+            const category = document.getElementById('fieldCategory').value;
+            const condition = document.getElementById('fieldCondition').value;
+            const price = document.getElementById('fieldPrice').value.trim();
+            let image = document.getElementById('fieldImage').value.trim() || document.getElementById('fieldImageUrl').value.trim() || products[idx].image;
+
+            if (!title) {
+                showToast('El título es obligatorio.', 'error');
+                return;
+            }
+
+            products[idx] = { ...products[idx], title, category, condition, price, image };
+            saveToSheet(products).then(ok => {
+                if (ok) showToast('Producto actualizado correctamente.');
+            });
+            closeModal();
+            renderAll();
+        }
+
+        function deleteProduct() {
+            const idx = products.findIndex(p => p.id === deletingId);
+            if (idx === -1) return;
+
+            products.splice(idx, 1);
+            // Reassign IDs
+            products.forEach((p, i) => p.id = i + 1);
+            saveToSheet(products).then(ok => {
+                if (ok) showToast('Producto eliminado.');
+            });
+            closeDeleteModal();
+            renderAll();
+        }
+
+        // ===== Global handlers (called from table buttons) =====
+        window.adminEdit = (id) => {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            editingId = id;
+            document.getElementById('modalTitle').textContent = 'Editar Producto';
+            document.getElementById('submitText').textContent = 'Actualizar Producto';
+            fillForm(product);
+            openModal();
+        };
+
+        window.adminDelete = (id) => {
+            deletingId = id;
+            openDeleteModal();
+        };
+
+        // ===== Event Listeners =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide
+            lucide.createIcons();
+
+            // Load products
+            loadProducts().then(() => {
+                checkConnection();
+            });
+
+            // Add product button
+            document.getElementById('btnAddProduct').addEventListener('click', () => {
+                resetForm();
+                openModal();
+            });
+
+            // Close modal
+            document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+            document.getElementById('btnCancelForm').addEventListener('click', closeModal);
+
+            // Close modal on backdrop click
+            document.getElementById('productModal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeModal();
+            });
+
+            // Submit form
+            document.getElementById('productForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (editingId !== null) {
+                    editProduct();
+                } else {
+                    addProduct();
+                }
+            });
+
+            // Delete modal
+            document.getElementById('btnConfirmDelete').addEventListener('click', deleteProduct);
+            document.getElementById('btnCancelDelete').addEventListener('click', closeDeleteModal);
+            document.getElementById('deleteModal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeDeleteModal();
+            });
+
+            // Config modal
+            document.getElementById('btnConfig').addEventListener('click', openConfigModal);
+            document.getElementById('btnCloseConfig').addEventListener('click', closeConfigModal);
+            document.getElementById('configModal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeConfigModal();
+            });
+            document.getElementById('btnSaveConfig').addEventListener('click', () => {
+                saveConfig({
+                    sheetId: document.getElementById('configSheetId').value.trim(),
+                    scriptUrl: document.getElementById('configScriptUrl').value.trim(),
+                    imgurId: document.getElementById('configImgurId').value.trim(),
+                });
+                showToast('Configuración guardada.');
+                checkConnection();
+                closeConfigModal();
+                // Reload products with new config
+                loadProducts();
+            });
+
+            // Search & filter
+            document.getElementById('searchInput').addEventListener('input', renderTable);
+            document.getElementById('filterCategory').addEventListener('change', renderTable);
+
+            // Toggle URL input
+            document.getElementById('btnToggleUrl').addEventListener('click', () => {
+                const container = document.getElementById('urlInputContainer');
+                container.classList.toggle('hidden');
+            });
+
+            // Remove image preview
+            document.getElementById('btnRemoveImage').addEventListener('click', (e) => {
+                e.stopPropagation();
+                resetUploadUI();
+                document.getElementById('fieldImage').value = '';
+                currentImage = '';
+            });
+
+            // File upload
+            const fileInput = document.getElementById('fileInput');
+            const uploadZone = document.getElementById('uploadZone');
+
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) await handleFileUpload(file);
+            });
+
+            // Drag and drop
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('drag-over');
+            });
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('drag-over');
+            });
+            uploadZone.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    await handleFileUpload(file);
+                }
+            });
+
+            async function handleFileUpload(file) {
+                // Show preview immediately
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('uploadPlaceholder').classList.add('hidden');
+                    document.getElementById('uploadPreview').classList.remove('hidden');
+                    document.getElementById('previewImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+
+                // Show uploading spinner
+                document.getElementById('uploadSpinner').classList.remove('hidden');
+
+                // Upload to Imgur
+                const url = await uploadToImgur(file);
+
+                document.getElementById('uploadSpinner').classList.add('hidden');
+
+                if (url) {
+                    document.getElementById('fieldImage').value = url;
+                    document.getElementById('previewImage').src = url;
+                    currentImage = url;
+                    showToast('Imagen subida correctamente.');
+                } else {
+                    showToast('No se pudo subir la imagen. Puedes pegar una URL manualmente.', 'error');
+                }
+            }
+        });
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+===================================================================
+  TRADE FOX 🦊  —  GUÍA PARA CONFIGURAR EL PANEL ADMIN
+===================================================================
+
+Esta guía explica cómo configurar el panel de administración
+para que puedas agregar, editar y eliminar productos de tu
+tienda directamente desde el navegador, SIN tocar código.
+
+
+================================================================
+  LO QUE NECESITAS ANTES DE EMPEZAR
+================================================================
+
+1. Una hoja de cálculo de Google Sheets con tus productos
+   (si ya la creaste para la web pública, ¡usarás la misma!)
+2. Una cuenta en Imgur (gratuita) para subir imágenes
+3. Google Apps Script (se configura desde Google Sheets)
+
+
+================================================================
+  PASO 1: CREAR O USAR TU HOJA DE GOOGLE SHEETS
+================================================================
+
+Si ya tienes una hoja de Google Sheets con tus productos
+(configurada para la web), PUEDES SALTAR ESTE PASO.
+
+Si no:
+1. Ve a:  https://sheets.new
+2. Cambia el nombre de la pestaña inferior a:  Productos
+3. En la FILA 1, pon estos encabezados:
+     A1 → Titulo
+     B1 → Categoria
+     C1 → Estado
+     D1 → Precio
+     E1 → Imagen
+4. Agrega tus productos a partir de la fila 2.
+5. Haz la hoja pública:
+   Archivo → Compartir → Publicar en la web → Publicar
+6. Copia el ID de la hoja (lo que está entre /d/ y /edit
+   en la URL del navegador).
+
+
+================================================================
+  PASO 2: CREAR EL APPS SCRIPT (PARA GUARDAR CAMBIOS)
+================================================================
+
+Este paso permite que el panel admin pueda GUARDAR los
+productos de vuelta en tu hoja de Google Sheets.
+
+1. Abre tu hoja de Google Sheets.
+2. En el menú superior, ve a:
+   Extensiones → Apps Script
+   (se abre una nueva pestaña con el editor de código).
+
+3. BORRA todo el código que aparezca y PEGA esto:
+
+   ----------------------------------------------------------------
+   function doPost(e) {
+     try {
+       var body = JSON.parse(e.postData.contents);
+       if (body.action !== 'save') {
+         return jsonResponse({ error: 'Acción no válida' }, 400);
+       }
+       var data = body.data;
+       var ss = SpreadsheetApp.getActiveSpreadsheet();
+       var sheet = ss.getSheetByName('Productos');
+       if (!sheet) return jsonResponse({ error: 'Hoja no encontrada' }, 404);
+
+       // Limpiar datos existentes (mantener encabezados)
+       var lastRow = sheet.getLastRow();
+       if (lastRow > 1) {
+         sheet.getRange(2, 1, lastRow - 1, 5).clearContent();
+       }
+
+       // Escribir nuevos datos
+       if (data && data.length > 0) {
+         sheet.getRange(2, 1, data.length, 5).setValues(data);
+       }
+
+       return jsonResponse({ success: true, rows: data.length });
+     } catch (err) {
+       return jsonResponse({ error: err.toString() }, 500);
+     }
+   }
+
+   function jsonResponse(data, code) {
+     return ContentService
+       .createTextOutput(JSON.stringify(data))
+       .setMimeType(ContentService.MimeType.JSON);
+   }
+   ----------------------------------------------------------------
+
+4. Guarda el proyecto (Ctrl + S o el icono de disquete).
+5. Ponle un nombre, por ejemplo: "Trade Fox Admin API".
+
+6. IMPORTANTE — Implementar como Web App:
+   - Haz clic en "Implementar" → "Nueva implementación".
+   - Tipo: "Aplicación web".
+   - Ejecutar como: "Yo".
+   - Quién tiene acceso: "Cualquier persona".
+   - Haz clic en "Implementar".
+   - Se te pedirá autorización. Haz clic en "Revisar permisos"
+     → "Avanzado" → "Ir a (nombre del proyecto)" → "Permitir".
+   - Se mostrará un ENLACE URL. ¡Cópialo!
+
+7. Ese enlace es lo que necesitas para el campo
+   "Google Apps Script URL" en la configuración del panel.
+
+
+================================================================
+  PASO 3: CREAR CUENTA EN IMGUR (PARA SUBIR IMÁGENES)
+================================================================
+
+1. Ve a:  https://api.imgur.com/oauth2/addclient
+2. Inicia sesión o regístrate (es gratis).
+3. Llena el formulario:
+   - Application name:  Trade Fox Admin
+   - Authorization type:  OAuth 2 authorization flow with a callback URL
+   - Email:  tu correo
+   - Description:  (lo que quieras)
+4. Haz clic en "Submit".
+5. Se te mostrará tu "Client ID" (una cadena de letras y números).
+6. ¡Cópiála!
+
+Si no quieres crear cuenta en Imgur, también puedes pegar
+el enlace de cualquier imagen directamente en el formulario
+(hay un botón para eso).
+
+
+================================================================
+  PASO 4: CONFIGURAR EL PANEL ADMIN
+================================================================
+
+1. Abre tu web y ve a la URL:
+   tusitio.netlify.app/admin
+   (o agregando /admin.html al final de tu enlace).
+
+2. Haz clic en el botón "Configuración" (icono de engranaje)
+   arriba a la derecha.
+
+3. Completa los 3 campos:
+   - Google Sheets ID:  pega el ID de tu hoja (Paso 1)
+   - Google Apps Script URL:  pega el enlace del script (Paso 2)
+   - Imgur Client ID:  pega tu Client ID (Paso 3)
+
+4. Haz clic en "Guardar".
+
+5. ¡Listo! El panel ya está conectado y listo para usar.
+
+
+================================================================
+  CÓMO USAR EL PANEL ADMIN
+================================================================
+
+AGREGAR UN PRODUCTO:
+1. Haz clic en "Agregar Producto".
+2. Completa: Título, Categoría, Estado y Precio.
+3. Para la imagen, arrastra una foto o haz clic para
+   seleccionarla (se subirá automáticamente a Imgur).
+4. También puedes pegar un enlace de imagen directamente.
+5. Haz clic en "Guardar Producto".
+
+EDITAR UN PRODUCTO:
+1. Busca el producto en la tabla.
+2. Haz clic en el icono de lápiz ✏️.
+3. Cambia lo que necesites.
+4. Haz clic en "Actualizar Producto".
+
+ELIMINAR UN PRODUCTO:
+1. Busca el producto en la tabla.
+2. Haz clic en el icono de papelera 🗑️.
+3. Confirma la eliminación.
+
+NOTA: Todos los cambios se guardan AUTOMÁTICAMENTE
+en tu hoja de Google Sheets y se reflejan en la web.
+
+
+================================================================
+  SOLUCIÓN DE PROBLEMAS
+================================================================
+
+❌ "No hay hoja de Google Sheets configurada"
+   → Ve a Configuración y pega tu Sheet ID.
+
+❌ "Falta el URL de Apps Script"
+   → Completa el PASO 2 de esta guía.
+
+❌ "Error al subir imagen a Imgur"
+   → Verifica que tu Client ID de Imgur es correcto.
+   → Alternativa: pega el enlace de la imagen manualmente.
+
+❌ "Los cambios no se guardan"
+   → Verifica que el URL de Apps Script sea correcto.
+   → Verifica que el Apps Script esté "Implementado" como web app.
+
+❌ "Error al cargar productos"
+   → Verifica que la hoja esté PUBLICADA en la web.
+   → Verifica que la pestaña se llame exactamente "Productos".
+   → Verifica que el Sheet ID sea correcto.
+
+
+================================================================
+  DATOS IMPORTANTES
+================================================================
+
+- La configuración se guarda en TU NAVEGADOR (localStorage).
+  Si cambias de navegador o limpias el cache, tendrás que
+  volver a configurar los 3 campos.
+
+- Para más seguridad, puedes cambiar el nombre del archivo
+  admin.html a algo que solo tú conozcas (ej: panel-fox-2024.html).
+
+- La hoja de Google Sheets debe estar PUBLICADA para que
+  la web pública pueda leer los productos.
+
+================================================================
+  ¿Dudas? Revisa esta guía paso a paso con calma. 🦊🎮
+================================================================
