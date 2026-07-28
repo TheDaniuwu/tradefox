@@ -13,8 +13,7 @@ tienda directamente desde el navegador, SIN tocar código.
 
 1. Una hoja de cálculo de Google Sheets con tus productos
    (si ya la creaste para la web pública, ¡usarás la misma!)
-2. Una cuenta en Imgur (gratuita) para subir imágenes
-3. Google Apps Script (se configura desde Google Sheets)
+2. Google Apps Script (se configura desde Google Sheets)
 
 
 ================================================================
@@ -108,27 +107,7 @@ productos de vuelta en tu hoja de Google Sheets.
 
 
 ================================================================
-  PASO 3: CREAR CUENTA EN IMGUR (PARA SUBIR IMÁGENES)
-================================================================
-
-1. Ve a:  https://api.imgur.com/oauth2/addclient
-2. Inicia sesión o regístrate (es gratis).
-3. Llena el formulario:
-   - Application name:  Trade Fox Admin
-   - Authorization type:  OAuth 2 authorization flow with a callback URL
-   - Email:  tu correo
-   - Description:  (lo que quieras)
-4. Haz clic en "Submit".
-5. Se te mostrará tu "Client ID" (una cadena de letras y números).
-6. ¡Cópiála!
-
-Si no quieres crear cuenta en Imgur, también puedes pegar
-el enlace de cualquier imagen directamente en el formulario
-(hay un botón para eso).
-
-
-================================================================
-  PASO 4: CONFIGURAR EL PANEL ADMIN
+  PASO 3: CONFIGURAR EL PANEL ADMIN
 ================================================================
 
 1. Abre tu web y ve a la URL:
@@ -138,14 +117,38 @@ el enlace de cualquier imagen directamente en el formulario
 2. Haz clic en el botón "Configuración" (icono de engranaje)
    arriba a la derecha.
 
-3. Completa los 3 campos:
+3. Completa los 2 campos:
    - Google Sheets ID:  pega el ID de tu hoja (Paso 1)
    - Google Apps Script URL:  pega el enlace del script (Paso 2)
-   - Imgur Client ID:  pega tu Client ID (Paso 3)
 
 4. Haz clic en "Guardar".
 
 5. ¡Listo! El panel ya está conectado y listo para usar.
+
+
+================================================================
+  ¿CÓMO SUBIR IMÁGENES DE LOS PRODUCTOS?
+================================================================
+
+Como las imágenes se gestionan por enlace (URL), necesitas
+subir primero la foto a internet y luego pegar el enlace
+en el campo "URL de la imagen".
+
+OPCIÓN RECOMENDADA — PostImages.org (gratis y sin cuenta):
+1. Entra a:  https://postimages.org
+2. Haz clic en "Elegir imágenes" y selecciona tu foto.
+3. (Opcional) Marca "Sin caducidad" para que no se borre.
+4. Haz clic en "Subir".
+5. Cuando termine, busca el enlace que dice "Hotlink para
+   foros" o "Imagen directa". Copia esa URL (debe terminar
+   en .jpg, .png o similar).
+6. Pega esa URL en el campo de imagen del producto.
+
+OPCIÓN 2 — Google Drive:
+1. Sube la imagen a tu Google Drive.
+2. Clic derecho en la imagen → "Compartir" →
+   "Cualquiera con el enlace".
+3. Copia el enlace y pégalo en el campo de imagen.
 
 
 ================================================================
@@ -155,10 +158,10 @@ el enlace de cualquier imagen directamente en el formulario
 AGREGAR UN PRODUCTO:
 1. Haz clic en "Agregar Producto".
 2. Completa: Título, Categoría, Estado y Precio.
-3. Para la imagen, arrastra una foto o haz clic para
-   seleccionarla (se subirá automáticamente a Imgur).
-4. También puedes pegar un enlace de imagen directamente.
-5. Haz clic en "Guardar Producto".
+3. Pega el enlace (URL) de la imagen (ver sección anterior).
+   Verás una vista previa de la imagen al pegar el enlace.
+   Si no pones nada, se usará una imagen por defecto.
+4. Haz clic en "Guardar Producto".
 
 EDITAR UN PRODUCTO:
 1. Busca el producto en la tabla.
@@ -185,13 +188,14 @@ en tu hoja de Google Sheets y se reflejan en la web.
 ❌ "Falta el URL de Apps Script"
    → Completa el PASO 2 de esta guía.
 
-❌ "Error al subir imagen a Imgur"
-   → Verifica que tu Client ID de Imgur es correcto.
-   → Alternativa: pega el enlace de la imagen manualmente.
-
 ❌ "Los cambios no se guardan"
    → Verifica que el URL de Apps Script sea correcto.
    → Verifica que el Apps Script esté "Implementado" como web app.
+
+❌ "La imagen no aparece / no carga"
+   → Verifica que la URL termine en .jpg, .png, etc.
+   → Verifica que la imagen sea pública (cualquiera pueda verla).
+   → Para Google Drive: debe estar como "Cualquiera con el enlace".
 
 ❌ "Error al cargar productos"
    → Verifica que la hoja esté PUBLICADA en la web.
@@ -205,7 +209,7 @@ en tu hoja de Google Sheets y se reflejan en la web.
 
 - La configuración se guarda en TU NAVEGADOR (localStorage).
   Si cambias de navegador o limpias el cache, tendrás que
-  volver a configurar los 3 campos.
+  volver a configurar los campos.
 
 - Para más seguridad, puedes cambiar el nombre del archivo
   admin.html a algo que solo tú conozcas (ej: panel-fox-2024.html).

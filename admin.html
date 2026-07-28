@@ -310,43 +310,21 @@
 
                 <!-- Imagen -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Imagen del producto</label>
-                    <!-- Upload Zone -->
-                    <div id="uploadZone" class="upload-zone rounded-xl p-6 text-center cursor-pointer relative">
-                        <div id="uploadPlaceholder">
-                            <i data-lucide="image-plus" class="w-10 h-10 text-fox-orange/60 mx-auto mb-2"></i>
-                            <p class="text-sm text-gray-400">Arrastra una imagen aquí o <span class="text-fox-orange font-medium">haz clic para seleccionar</span></p>
-                            <p class="text-xs text-gray-500 mt-1">Se subirá automáticamente a Imgur</p>
-                        </div>
-                        <!-- Preview -->
-                        <div id="uploadPreview" class="hidden">
-                            <img id="previewImage" src="" alt="Preview" class="max-h-48 mx-auto rounded-lg object-cover" />
-                            <button type="button" id="btnRemoveImage"
-                                    class="mt-2 text-xs text-red-400 hover:text-red-300 transition-colors">
-                                Quitar imagen
-                            </button>
-                        </div>
-                        <!-- Uploading indicator -->
-                        <div id="uploadSpinner" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-fox-dark/80 rounded-xl">
-                            <div class="spinner mb-2"></div>
-                            <p class="text-sm text-gray-400">Subiendo imagen...</p>
-                        </div>
-                        <input type="file" id="fileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">URL de la imagen</label>
+                    <div class="relative">
+                        <i data-lucide="image" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                        <input type="url" id="fieldImage" placeholder="https://ejemplo.com/imagen.jpg"
+                               class="w-full pl-10 pr-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm" />
                     </div>
-                    <!-- Manual URL fallback -->
-                    <div class="mt-3">
-                        <button type="button" id="btnToggleUrl" class="text-xs text-gray-500 hover:text-fox-orange transition-colors">
-                            O pega un enlace de imagen directamente
-                        </button>
-                        <div id="urlInputContainer" class="hidden mt-2">
-                            <input type="url" id="fieldImageUrl" placeholder="https://ejemplo.com/imagen.jpg"
-                                   class="w-full px-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm" />
-                        </div>
+                    <p class="text-xs text-gray-500 mt-2 flex items-center gap-1.5">
+                        <i data-lucide="info" class="w-3 h-3"></i>
+                        Subí la foto a <a href="https://postimages.org" target="_blank" class="text-fox-orange hover:underline">PostImages.org</a> o Google Drive y pegá el enlace aquí. Si lo dejás vacío, se usa una imagen por defecto.
+                    </p>
+                    <!-- Preview -->
+                    <div id="previewContainer" class="hidden mt-3 rounded-xl overflow-hidden bg-fox-darker border border-white/5">
+                        <img id="previewImage" src="" alt="Preview" class="max-h-48 w-full object-cover" />
                     </div>
                 </div>
-
-                <!-- Hidden field for image URL (what gets saved) -->
-                <input type="hidden" id="fieldImage" value="" />
 
                 <!-- Actions -->
                 <div class="flex items-center justify-end gap-3 pt-2">
@@ -422,18 +400,6 @@
                     <p class="text-xs text-gray-600 mt-2">Instrucciones para crear el Apps Script en la guía de configuración.</p>
                 </div>
 
-                <!-- Imgur Config -->
-                <div class="bg-fox-darker rounded-xl p-5 border border-white/5">
-                    <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-                        <i data-lucide="image" class="w-4 h-4 text-fox-orange"></i>
-                        Imgur (subida de imágenes)
-                    </h3>
-                    <p class="text-xs text-gray-500 mb-4">Client ID de Imgur para subir imágenes automáticamente</p>
-                    <input type="text" id="configImgurId" placeholder="Ej: abc123def456"
-                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono" />
-                    <p class="text-xs text-gray-600 mt-2">Regístrate en <a href="https://api.imgur.com/oauth2/addclient" target="_blank" class="text-fox-orange hover:underline">api.imgur.com</a> para obtener tu Client ID.</p>
-                </div>
-
                 <!-- Save config -->
                 <div class="flex items-center justify-between">
                     <p class="text-xs text-gray-500">Los datos se guardan localmente en tu navegador.</p>
@@ -467,23 +433,20 @@
         // ===== LocalStorage Config =====
         function getConfig() {
             return {
-                sheetId: localStorage.getItem('tf_sheet_id') || '',
-                scriptUrl: localStorage.getItem('tf_script_url') || '',
-                imgurId: localStorage.getItem('tf_imgur_id') || '',
+                sheetId: localStorage.getItem('tf_sheet_id') || '16hpM9D5UOnZ2C-qrhNSqugh-jKWAXXL661CfPGUQF40',
+                scriptUrl: localStorage.getItem('tf_script_url') || 'https://script.google.com/macros/s/AKfycbzdBxqHCq5Ou9f8PQW_nw6L3JmWJKY5mKjuvjg6KNNUS02vppB1ajk447kYlA4Tb32WiA/exec',
             };
         }
 
         function saveConfig(cfg) {
             localStorage.setItem('tf_sheet_id', cfg.sheetId);
             localStorage.setItem('tf_script_url', cfg.scriptUrl);
-            localStorage.setItem('tf_imgur_id', cfg.imgurId);
         }
 
         function loadConfigUI() {
             const cfg = getConfig();
             document.getElementById('configSheetId').value = cfg.sheetId;
             document.getElementById('configScriptUrl').value = cfg.scriptUrl;
-            document.getElementById('configImgurId').value = cfg.imgurId;
         }
 
         // ===== Toast Notifications =====
@@ -611,36 +574,6 @@
                 console.warn('[Trade Fox Admin] Error guardando:', err);
                 showToast('Error al guardar en Google Sheets.', 'error');
                 return false;
-            }
-        }
-
-        // ===== Imgur Upload =====
-        async function uploadToImgur(file) {
-            const cfg = getConfig();
-            if (!cfg.imgurId) {
-                showToast('Falta el Client ID de Imgur. Puedes pegar la URL manualmente.', 'error');
-                return null;
-            }
-
-            const formData = new FormData();
-            formData.append('image', file);
-
-            try {
-                const res = await fetch('https://api.imgur.com/3/image', {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Client-ID ' + cfg.imgurId },
-                    body: formData,
-                });
-                const data = await res.json();
-                if (data.success) {
-                    return data.data.link;
-                }
-                showToast('Error al subir imagen a Imgur.', 'error');
-                return null;
-            } catch (err) {
-                console.warn('[Trade Fox Admin] Error Imgur:', err);
-                showToast('Error al subir imagen a Imgur.', 'error');
-                return null;
             }
         }
 
@@ -802,15 +735,8 @@
             editingId = null;
             document.getElementById('modalTitle').textContent = 'Agregar Producto';
             document.getElementById('submitText').textContent = 'Guardar Producto';
-            resetUploadUI();
-        }
-
-        function resetUploadUI() {
-            document.getElementById('uploadPlaceholder').classList.remove('hidden');
-            document.getElementById('uploadPreview').classList.add('hidden');
-            document.getElementById('uploadSpinner').classList.add('hidden');
+            document.getElementById('previewContainer').classList.add('hidden');
             document.getElementById('previewImage').src = '';
-            document.getElementById('fileInput').value = '';
         }
 
         function fillForm(product) {
@@ -823,11 +749,11 @@
 
             // Show preview if has image
             if (product.image && product.image !== DEFAULT_IMAGE) {
-                document.getElementById('uploadPlaceholder').classList.add('hidden');
-                document.getElementById('uploadPreview').classList.remove('hidden');
+                document.getElementById('previewContainer').classList.remove('hidden');
                 document.getElementById('previewImage').src = product.image;
             } else {
-                resetUploadUI();
+                document.getElementById('previewContainer').classList.add('hidden');
+                document.getElementById('previewImage').src = '';
             }
         }
 
@@ -837,7 +763,7 @@
             const category = document.getElementById('fieldCategory').value;
             const condition = document.getElementById('fieldCondition').value;
             const price = document.getElementById('fieldPrice').value.trim();
-            let image = document.getElementById('fieldImage').value.trim() || document.getElementById('fieldImageUrl').value.trim() || DEFAULT_IMAGE;
+            let image = document.getElementById('fieldImage').value.trim() || DEFAULT_IMAGE;
 
             if (!title) {
                 showToast('El título es obligatorio.', 'error');
@@ -869,7 +795,7 @@
             const category = document.getElementById('fieldCategory').value;
             const condition = document.getElementById('fieldCondition').value;
             const price = document.getElementById('fieldPrice').value.trim();
-            let image = document.getElementById('fieldImage').value.trim() || document.getElementById('fieldImageUrl').value.trim() || products[idx].image;
+            let image = document.getElementById('fieldImage').value.trim() || products[idx].image;
 
             if (!title) {
                 showToast('El título es obligatorio.', 'error');
@@ -967,7 +893,6 @@
                 saveConfig({
                     sheetId: document.getElementById('configSheetId').value.trim(),
                     scriptUrl: document.getElementById('configScriptUrl').value.trim(),
-                    imgurId: document.getElementById('configImgurId').value.trim(),
                 });
                 showToast('Configuración guardada.');
                 checkConnection();
@@ -980,73 +905,25 @@
             document.getElementById('searchInput').addEventListener('input', renderTable);
             document.getElementById('filterCategory').addEventListener('change', renderTable);
 
-            // Toggle URL input
-            document.getElementById('btnToggleUrl').addEventListener('click', () => {
-                const container = document.getElementById('urlInputContainer');
-                container.classList.toggle('hidden');
-            });
+            // Live image preview on URL input
+            const fieldImage = document.getElementById('fieldImage');
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
 
-            // Remove image preview
-            document.getElementById('btnRemoveImage').addEventListener('click', (e) => {
-                e.stopPropagation();
-                resetUploadUI();
-                document.getElementById('fieldImage').value = '';
-                currentImage = '';
-            });
-
-            // File upload
-            const fileInput = document.getElementById('fileInput');
-            const uploadZone = document.getElementById('uploadZone');
-
-            fileInput.addEventListener('change', async (e) => {
-                const file = e.target.files[0];
-                if (file) await handleFileUpload(file);
-            });
-
-            // Drag and drop
-            uploadZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadZone.classList.add('drag-over');
-            });
-            uploadZone.addEventListener('dragleave', () => {
-                uploadZone.classList.remove('drag-over');
-            });
-            uploadZone.addEventListener('drop', async (e) => {
-                e.preventDefault();
-                uploadZone.classList.remove('drag-over');
-                const file = e.dataTransfer.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    await handleFileUpload(file);
-                }
-            });
-
-            async function handleFileUpload(file) {
-                // Show preview immediately
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('uploadPlaceholder').classList.add('hidden');
-                    document.getElementById('uploadPreview').classList.remove('hidden');
-                    document.getElementById('previewImage').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-
-                // Show uploading spinner
-                document.getElementById('uploadSpinner').classList.remove('hidden');
-
-                // Upload to Imgur
-                const url = await uploadToImgur(file);
-
-                document.getElementById('uploadSpinner').classList.add('hidden');
-
+            fieldImage.addEventListener('input', () => {
+                const url = fieldImage.value.trim();
                 if (url) {
-                    document.getElementById('fieldImage').value = url;
-                    document.getElementById('previewImage').src = url;
-                    currentImage = url;
-                    showToast('Imagen subida correctamente.');
+                    previewContainer.classList.remove('hidden');
+                    previewImage.src = url;
+                    // Si la imagen falla, ocultar preview
+                    previewImage.onerror = () => {
+                        previewContainer.classList.add('hidden');
+                    };
                 } else {
-                    showToast('No se pudo subir la imagen. Puedes pegar una URL manualmente.', 'error');
+                    previewContainer.classList.add('hidden');
+                    previewImage.src = '';
                 }
-            }
+            });
         });
     })();
     </script>
