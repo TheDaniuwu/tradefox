@@ -545,8 +545,17 @@
                 const rows = data.table.rows;
                 if (!rows) throw new Error('No hay filas');
 
+                // Detectar si la primera fila es un encabezado o datos.
+                const HEADER_KEYWORDS = ['titulo', 'título', 'categoria', 'categoría', 'estado', 'precio', 'imagen', 'nombre', 'name', 'title'];
+                const firstCell = rows[0]?.c?.[0]?.v?.toString().trim().toLowerCase() || '';
+                const firstRowIsHeader = HEADER_KEYWORDS.some(kw => firstCell === kw);
+                const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
+                if (!firstRowIsHeader) {
+                    console.warn('[Trade Fox Admin] No se detectó fila de encabezados; se leen todas las filas.');
+                }
+
                 products = [];
-                rows.slice(1).forEach((row, idx) => {
+                dataRows.forEach((row, idx) => {
                     const cells = row.c || [];
                     const title = cells[0]?.v?.toString().trim();
                     if (!title) return;

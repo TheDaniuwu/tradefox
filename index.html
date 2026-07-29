@@ -565,9 +565,22 @@
                     return [];
                 }
 
-                // Mapear filas a objetos producto. Saltamos la fila 0 (encabezados).
+                // Detectar si la primera fila es un encabezado o ya son datos.
+                // Los encabezados típicos: "Titulo", "Categoria", "Estado", etc.
+                // Si la celda A1 es texto que coincide con un encabezado conocido,
+                // la saltamos; si no, asumimos que la hoja no tiene encabezados
+                // y procesamos TODAS las filas.
+                const HEADER_KEYWORDS = ['titulo', 'título', 'categoria', 'categoría', 'estado', 'precio', 'imagen', 'nombre', 'name', 'title'];
+                const firstCell = rows[0]?.c?.[0]?.v?.toString().trim().toLowerCase() || '';
+                const firstRowIsHeader = HEADER_KEYWORDS.some(kw => firstCell === kw);
+                const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
+                if (!firstRowIsHeader) {
+                    console.info('[Trade Fox] No se detectó fila de encabezados; se leen todas las filas.');
+                }
+
+                // Mapear filas a objetos producto.
                 const mapped = [];
-                rows.slice(1).forEach((row, idx) => {
+                dataRows.forEach((row, idx) => {
                     const cells = row.c || [];
                     const title = cells[0]?.v?.toString().trim();
                     if (!title) return; // Saltar filas vacías
