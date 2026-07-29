@@ -322,7 +322,7 @@
             <!-- Empty state -->
             <div id="emptyState" class="hidden text-center py-20">
                 <div class="text-6xl mb-4">🔍</div>
-                <p class="text-gray-400 text-lg">No hay productos en esta categoría por ahora.</p>
+                <p id="emptyStateText" class="text-gray-400 text-lg">No hay productos en esta categoría por ahora.</p>
             </div>
         </div>
     </section>
@@ -502,9 +502,10 @@
 
         // ============================================================
         //  CATÁLOGO DE PRODUCTOS
-        //  Los productos se cargan automáticamente desde Google Sheets.
-        //  Si no hay internet o la hoja falla, se usan estos productos
-        //  de respaldo (fallback) para que la web nunca quede vacía.
+        //  Los productos se cargan ÚNICAMENTE desde Google Sheets,
+        //  que se gestiona desde el panel de administración (/admin).
+        //  No hay productos de respaldo ni de demostración: si la hoja
+        //  está vacía o no carga, se muestra un estado vacío dinámico.
         // ============================================================
 
         // >>> PON AQUÍ EL ID DE TU HOJA DE GOOGLE SHEETS <<<
@@ -512,31 +513,17 @@
         const SHEET_ID = '16hpM9D5UOnZ2C-qrhNSqugh-jKWAXXL661CfPGUQF40';
         const SHEET_NAME = 'Productos'; // Nombre exacto de la pestaña de la hoja
 
-        // Productos de respaldo (se muestran si Google Sheets no está configurado o no carga)
-        const FALLBACK_PRODUCTS = [
-            { id: 1, title: 'PlayStation 5 Slim', category: 'Consolas', condition: 'Nuevo', price: 'S/ 2,499', image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&h=400&fit=crop' },
-            { id: 2, title: 'PlayStation 4 Pro 1TB', category: 'Consolas', condition: 'Seminuevo', price: 'S/ 1,199', image: 'https://images.unsplash.com/photo-1622297845775-5ff3fef71d13?w=600&h=400&fit=crop' },
-            { id: 3, title: 'Nintendo Switch OLED', category: 'Consolas', condition: 'Nuevo', price: 'S/ 1,899', image: 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3d?w=600&h=400&fit=crop' },
-            { id: 4, title: 'DualSense PS5', category: 'Mandos', condition: 'Nuevo', price: 'S/ 299', image: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=400&fit=crop' },
-            { id: 5, title: 'DualShock 4 PS4', category: 'Mandos', condition: 'Seminuevo', price: 'S/ 149', image: 'https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=600&h=400&fit=crop' },
-            { id: 6, title: 'God of War Ragnarök', category: 'Juegos Físicos', condition: 'Seminuevo', price: 'S/ 189', image: 'https://images.unsplash.com/photo-1605379399642-870262d3d051?w=600&h=400&fit=crop' },
-            { id: 7, title: 'FIFA 24 PS5', category: 'Juegos Físicos', condition: 'Nuevo', price: 'S/ 249', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=400&fit=crop' },
-            { id: 8, title: 'The Last of Us Part II', category: 'Juegos Físicos', condition: 'Seminuevo', price: 'S/ 129', image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600&h=400&fit=crop' },
-            { id: 9, title: 'Audífonos Gaming RGB', category: 'Accesorios', condition: 'Nuevo', price: 'S/ 199', image: 'https://images.unsplash.com/photo-1599669454699-248893623440?w=600&h=400&fit=crop' },
-            { id: 10, title: 'Carga de Mandos Dual', category: 'Accesorios', condition: 'Nuevo', price: 'S/ 89', image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600&h=400&fit=crop' },
-            { id: 11, title: 'Teclado Mecánico Gamer', category: 'Accesorios', condition: 'Nuevo', price: 'S/ 259', image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&h=400&fit=crop' },
-            { id: 12, title: 'Xbox Series X', category: 'Consolas', condition: 'Nuevo', price: 'S/ 2,799', image: 'https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=600&h=400&fit=crop' }
-        ];
-
         // Array principal que se usa para renderizar (se llena al cargar)
         let products = [];
 
         // Carga productos desde Google Sheets. Devuelve un array de productos.
+        // Devuelve [] si Sheets no está configurado, la hoja está vacía o
+        // hay un error de carga. En ese caso, el front muestra un estado vacío.
         async function loadProductsFromSheet() {
-            // Si no hay SHEET_ID configurado, usar respaldo directamente
+            // Si no hay SHEET_ID configurado, no hay nada que mostrar
             if (!SHEET_ID) {
-                console.info('[Trade Fox] Google Sheets no configurado. Usando productos de respaldo.');
-                return FALLBACK_PRODUCTS;
+                console.info('[Trade Fox] Google Sheets no configurado. No hay productos.');
+                return [];
             }
 
             const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
@@ -553,7 +540,10 @@
                 const data = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
 
                 const rows = data.table.rows;
-                if (!rows || rows.length === 0) throw new Error('Hoja vacía');
+                if (!rows || rows.length === 0) {
+                    console.info('[Trade Fox] Hoja sin productos. Estado vacío.');
+                    return [];
+                }
 
                 // Mapear filas a objetos producto. Saltamos la fila 0 (encabezados).
                 const mapped = [];
@@ -572,10 +562,10 @@
                 });
 
                 console.info(`[Trade Fox] ${mapped.length} productos cargados desde Google Sheets.`);
-                return mapped.length > 0 ? mapped : FALLBACK_PRODUCTS;
+                return mapped; // vacío o con datos reales; nunca productos de demostración
             } catch (err) {
-                console.warn('[Trade Fox] No se pudo cargar Google Sheets. Usando respaldo.', err);
-                return FALLBACK_PRODUCTS;
+                console.warn('[Trade Fox] No se pudo cargar Google Sheets.', err);
+                return [];
             }
         }
 
@@ -612,6 +602,7 @@
         // ===== Renderizado de productos =====
         const productsGrid = document.getElementById('productsGrid');
         const emptyState = document.getElementById('emptyState');
+        const emptyStateText = document.getElementById('emptyStateText');
 
         function renderProducts() {
             const filtered = activeCategory === 'Todos'
@@ -621,6 +612,11 @@
             productsGrid.innerHTML = '';
 
             if (filtered.length === 0) {
+                // Mensaje dinámico: catálogo totalmente vacío vs categoría sin productos
+                const isEmptyCatalog = products.length === 0;
+                emptyStateText.textContent = isEmptyCatalog
+                    ? 'No hay productos disponibles por el momento.'
+                    : 'No hay productos en esta categoría por ahora.';
                 emptyState.classList.remove('hidden');
                 return;
             }
