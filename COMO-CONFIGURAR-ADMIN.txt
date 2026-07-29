@@ -8,6 +8,58 @@ tienda directamente desde el navegador, SIN tocar código.
 
 
 ================================================================
+  ⚠️  PASO 0 (OBLIGATORIO): SEGURIDAD DEL PANEL
+================================================================
+
+El panel de administración está PROTEGIDO con contraseña.
+Nadie puede entrar a /admin sin ella: ni siquiera verá la
+página, solo verá una pantalla de acceso.
+
+La contraseña NO está en el código (para que nadie pueda verla
+aunque el repositorio sea público). Se guarda como una
+"variable de entorno" en Netlify.
+
+
+CÓMO PONER LA CONTRASEÑA (solo la primera vez):
+
+1. Entra en Netlify y abre tu sitio (tradefoxshop).
+2. Ve a:  Site settings  →  Environment variables
+3. Haz clic en "Add a variable" → "Add a single variable".
+4. Rellena:
+     Key:    ADMIN_PASSWORD
+     Value:  (la contraseña que tú quieras)
+             Ejemplo:  Fox-2024!Segura
+5. Haz clic en "Deploy site" o en "Save".
+6. IMPORTANTE: tienes que VOLVER A DESPLEGAR (redeploy)
+   para que la contraseña surta efecto.
+   Ve a "Deploys" → "Trigger deploy" → "Deploy site".
+
+
+COMPROBAR QUE FUNCIONA:
+
+1. Entra en:  tradefoxshop.netlify.app/admin
+2. Debe aparecer una pantalla de acceso pidiendo la contraseña.
+3. Escribe la contraseña y pulsa "Entrar".
+4. Ya estás dentro. La sesión dura 8 horas; después vuelve
+   a pedirla.
+
+
+SI VES EL MENSAJE "Falta configurar la contraseña":
+   → Significa que aún no has hecho el PASO 0.
+   → Sigue los pasos anteriores.
+
+
+CAMBIAR LA CONTRASEÑA EN EL FUTURO:
+
+1. Ve a Netlify → Site settings → Environment variables.
+2. Edita el valor de ADMIN_PASSWORD y pon la nueva contraseña.
+3. Vuelve a desplegar (Deploys → Trigger deploy).
+
+NOTA: Si quieres que la contraseña deje de pedirse en un
+navegador antes de las 8 horas, borra las cookies del sitio.
+
+
+================================================================
   LO QUE NECESITAS ANTES DE EMPEZAR
 ================================================================
 
@@ -211,8 +263,9 @@ en tu hoja de Google Sheets y se reflejan en la web.
   Si cambias de navegador o limpias el cache, tendrás que
   volver a configurar los campos.
 
-- Para más seguridad, puedes cambiar el nombre del archivo
-  admin.html a algo que solo tú conozcas (ej: panel-fox-2024.html).
+- El panel está protegido por contraseña a nivel de servidor
+  (Netlify Edge Function + variable de entorno ADMIN_PASSWORD).
+  Ver el PASO 0 al principio de esta guía para configurarla.
 
 - La hoja de Google Sheets debe estar PUBLICADA para que
   la web pública pueda leer los productos.

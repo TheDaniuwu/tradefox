@@ -32,6 +32,21 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000"
 
+# ============================================================
+#  SEGURIDAD DEL PANEL DE ADMINISTRACIÓN
+#  Una Edge Function protege /admin y /admin.html con contraseña.
+#  La contraseña se define en la variable de entorno ADMIN_PASSWORD
+#  (Netlify → Site settings → Environment variables).
+#  Sin esa contraseña, el panel no se sirve en absoluto.
+# ============================================================
+[[edge_functions]]
+  function = "admin-auth"
+  path = "/admin"
+
+[[edge_functions]]
+  function = "admin-auth"
+  path = "/admin.html"
+
 # Redirección del panel de administración
 [[redirects]]
   from = "/admin"
