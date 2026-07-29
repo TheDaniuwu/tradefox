@@ -518,6 +518,34 @@
         // Estado de la última carga: 'ok' | 'empty' | 'not-configured' | 'not-public' | 'error'
         let loadStatus = 'ok';
 
+        // Convierte enlaces de Google Drive (que NO sirven como <img src>)
+        // al formato de "vista directa" que SÍ carga en un navegador.
+        // Acepta los formatos habituales:
+        //   - https://drive.google.com/file/d/FILE_ID/view?usp=...
+        //   - https://drive.google.com/open?id=FILE_ID
+        //   - https://drive.google.com/uc?id=FILE_ID
+        // NOTA: para que funcione, el ARCHIVO en Drive debe estar compartido
+        // como "Cualquiera con el enlace". Si sigue sin cargar, usa
+        // PostImages.org que da enlaces .jpg directos y siempre funcionan.
+        function normalizeImageUrl(url) {
+            if (!url) return url;
+            const u = url.trim();
+            // Ya es un enlace directo (termina en imagen) → dejar igual
+            if (/\.(jpe?g|png|webp|gif|bmp|svg)(\?|$)/i.test(u)) return u;
+
+            // Extraer el ID de archivo de los formatos conocidos de Drive
+            let id = null;
+            const m1 = u.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            id = (m1 && m1[1]) || (m2 && m2[1]) || null;
+            if (id) {
+                // drive.usercontent.google.com/download es el formato más
+                // compatible para hotlinking de imágenes de Drive.
+                return `https://drive.usercontent.google.com/download?id=${id}&export=view`;
+            }
+            return u;
+        }
+
         // Carga productos desde Google Sheets. Devuelve un array de productos.
         // Además actualiza `loadStatus` para que el front pueda mostrar mensajes
         // distintos según el motivo por el que no haya productos:
@@ -590,7 +618,7 @@
                         category: (cells[1]?.v?.toString().trim() || 'Otros'),
                         condition: (cells[2]?.v?.toString().trim() || 'Nuevo'),
                         price: (cells[3]?.v?.toString().trim() || 'Consultar'),
-                        image: (cells[4]?.v?.toString().trim() || 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&h=400&fit=crop')
+                        image: normalizeImageUrl(cells[4]?.v?.toString().trim()) || 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&h=400&fit=crop'
                     });
                 });
 

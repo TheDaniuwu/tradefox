@@ -72,6 +72,12 @@ Para la columna "Imagen", necesitas el ENLACE directo a la foto:
 NOTA: Las fotos quedan mejor si son cuadradas o apaisadas
 (aprox. 600x400 px).
 
+💡 CONSEJO: Si editas los productos desde el PANEL DE
+ADMINISTRACIÓN (tusitio.netlify.app/admin), puedes subir
+las fotos DIRECTAMENTE desde tu PC, sin tener que buscarles
+un enlace. Solo tienes que configurar Cloudinary una vez
+(ver la guía "COMO-CONFIGURAR-ADMIN.txt", PASO 4).
+
 
 ----------------------------------------------------------------
 PASO 5: HACER LA HOJA PÚBLICA  (¡MUY IMPORTANTE!)

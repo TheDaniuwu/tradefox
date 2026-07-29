@@ -310,7 +310,32 @@
 
                 <!-- Imagen -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">URL de la imagen</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Imagen del producto</label>
+
+                    <!-- Input file oculto (lo dispara la zona de subida) -->
+                    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden" />
+
+                    <!-- Zona de subida desde el PC (Cloudinary) -->
+                    <div id="uploadZone" class="upload-zone rounded-xl p-5 text-center cursor-pointer transition-all">
+                        <div id="uploadZoneIdle">
+                            <i data-lucide="upload-cloud" class="w-7 h-7 text-fox-orange mx-auto mb-2"></i>
+                            <p class="text-sm text-gray-300 font-medium">Arrastrá la foto aquí o hacé clic para seleccionarla</p>
+                            <p class="text-xs text-gray-500 mt-1">JPG, PNG o WEBP · máximo 5 MB</p>
+                        </div>
+                        <div id="uploadZoneBusy" class="hidden flex flex-col items-center gap-2">
+                            <div class="spinner"></div>
+                            <p class="text-sm text-gray-300 font-medium">Subiendo imagen...</p>
+                        </div>
+                    </div>
+
+                    <!-- Separador -->
+                    <div class="flex items-center gap-3 my-3">
+                        <div class="flex-1 h-px bg-white/5"></div>
+                        <span class="text-xs text-gray-600 uppercase tracking-wider">o pegá una URL</span>
+                        <div class="flex-1 h-px bg-white/5"></div>
+                    </div>
+
+                    <!-- URL manual (alternativa) -->
                     <div class="relative">
                         <i data-lucide="image" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
                         <input type="url" id="fieldImage" placeholder="https://ejemplo.com/imagen.jpg"
@@ -318,7 +343,7 @@
                     </div>
                     <p class="text-xs text-gray-500 mt-2 flex items-center gap-1.5">
                         <i data-lucide="info" class="w-3 h-3"></i>
-                        Subí la foto a <a href="https://postimages.org" target="_blank" class="text-fox-orange hover:underline">PostImages.org</a> o Google Drive y pegá el enlace aquí. Si lo dejás vacío, se usa una imagen por defecto.
+                        Subí la foto desde tu PC arriba, o pega un enlace. Si lo dejás vacío, se usa una imagen por defecto.
                     </p>
                     <!-- Preview -->
                     <div id="previewContainer" class="hidden mt-3 rounded-xl overflow-hidden bg-fox-darker border border-white/5">
@@ -400,6 +425,28 @@
                     <p class="text-xs text-gray-600 mt-2">Instrucciones para crear el Apps Script en la guía de configuración.</p>
                 </div>
 
+                <!-- Cloudinary (subida de imágenes desde el PC) -->
+                <div class="bg-fox-darker rounded-xl p-5 border border-white/5">
+                    <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                        <i data-lucide="upload-cloud" class="w-4 h-4 text-fox-orange"></i>
+                        Subida de imágenes (Cloudinary)
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-4">Permite subir fotos directamente desde el PC. Necesitas 2 datos de tu cuenta de Cloudinary (gratis). Ver la guía de configuración.</p>
+
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Cloud name</label>
+                    <input type="text" id="configCloudName" placeholder="Ej: tradefox"
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono mb-3" />
+
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Upload preset (sin firma)</label>
+                    <input type="text" id="configUploadPreset" placeholder="Ej: tradefox_preset"
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono" />
+
+                    <p class="text-xs text-gray-600 mt-2 flex items-start gap-1.5">
+                        <i data-lucide="info" class="w-3 h-3 mt-0.5 flex-shrink-0"></i>
+                        <span>El preset debe estar configurado como <strong class="text-gray-400">"Unsigned" (sin firma)</strong>. Estos datos son públicos por diseño: no exponen secretos.</span>
+                    </p>
+                </div>
+
                 <!-- Save config -->
                 <div class="flex items-center justify-between">
                     <p class="text-xs text-gray-500">Los datos se guardan localmente en tu navegador.</p>
@@ -430,23 +477,165 @@
         const CATEGORIES = ['Consolas', 'Juegos Físicos', 'Mandos', 'Accesorios'];
         const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&h=400&fit=crop';
 
+        // Convierte enlaces de Google Drive (que NO sirven como <img src>)
+        // al formato de "vista directa" que SÍ carga en un navegador.
+        // Acepta los formatos habituales:
+        //   - https://drive.google.com/file/d/FILE_ID/view?usp=...
+        //   - https://drive.google.com/open?id=FILE_ID
+        //   - https://drive.google.com/uc?id=FILE_ID
+        // NOTA: para que funcione, el ARCHIVO en Drive debe estar compartido
+        // como "Cualquiera con el enlace". Si sigue sin cargar, usa
+        // PostImages.org que da enlaces .jpg directos y siempre funcionan.
+        function normalizeImageUrl(url) {
+            if (!url) return url;
+            const u = url.trim();
+            // Ya es un enlace directo (termina en imagen) → dejar igual
+            if (/\.(jpe?g|png|webp|gif|bmp|svg)(\?|$)/i.test(u)) return u;
+
+            // Extraer el ID de archivo de los formatos conocidos de Drive
+            let id = null;
+            const m1 = u.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            id = (m1 && m1[1]) || (m2 && m2[1]) || null;
+            if (id) {
+                // drive.usercontent.google.com/download es el formato más
+                // compatible para hotlinking de imágenes de Drive.
+                return `https://drive.usercontent.google.com/download?id=${id}&export=view`;
+            }
+            return u;
+        }
+
+        // ===== Subida de imágenes a Cloudinary =====
+        const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
+        const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+        // Muestra/oculta la zona de subida según si Cloudinary está configurado.
+        function refreshUploadZone() {
+            const cfg = getConfig();
+            const zone = document.getElementById('uploadZone');
+            const idle = document.getElementById('uploadZoneIdle');
+            if (!cfg.cloudName || !cfg.uploadPreset) {
+                // Cloudinary sin configurar: avisamos y guiamos al modal de Configuración.
+                idle.innerHTML = `
+                    <i data-lucide="upload-cloud" class="w-7 h-7 text-gray-500 mx-auto mb-2"></i>
+                    <p class="text-sm text-gray-300 font-medium">Configurá Cloudinary para subir fotos desde tu PC</p>
+                    <p class="text-xs text-fox-orange mt-1 hover:underline">Hacé clic aquí para configurar ahora →</p>`;
+                lucide.createIcons();
+            } else {
+                idle.innerHTML = `
+                    <i data-lucide="upload-cloud" class="w-7 h-7 text-fox-orange mx-auto mb-2"></i>
+                    <p class="text-sm text-gray-300 font-medium">Arrastrá la foto aquí o hacé clic para seleccionarla</p>
+                    <p class="text-xs text-gray-500 mt-1">JPG, PNG o WEBP · máximo 5 MB</p>`;
+                lucide.createIcons();
+            }
+        }
+
+        function setUploadBusy(busy) {
+            const idle = document.getElementById('uploadZoneIdle');
+            const busyEl = document.getElementById('uploadZoneBusy');
+            const zone = document.getElementById('uploadZone');
+            if (busy) {
+                idle.classList.add('hidden');
+                busyEl.classList.remove('hidden');
+                busyEl.classList.add('flex');
+                zone.classList.remove('cursor-pointer');
+                zone.classList.add('cursor-wait', 'opacity-70');
+            } else {
+                idle.classList.remove('hidden');
+                busyEl.classList.add('hidden');
+                busyEl.classList.remove('flex');
+                zone.classList.add('cursor-pointer');
+                zone.classList.remove('cursor-wait', 'opacity-70');
+            }
+        }
+
+        // Sube un archivo a Cloudinary y devuelve la URL pública (secure_url).
+        async function uploadImageToCloudinary(file) {
+            const cfg = getConfig();
+            if (!cfg.cloudName || !cfg.uploadPreset) {
+                showToast('Configurá Cloudinary primero (botón Configuración).', 'error');
+                openConfigModal();
+                return null;
+            }
+            if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+                showToast('Formato no válido. Usá JPG, PNG, WEBP o GIF.', 'error');
+                return null;
+            }
+            if (file.size > MAX_IMAGE_BYTES) {
+                showToast('La imagen pesa más de 5 MB. Usá una más chica.', 'error');
+                return null;
+            }
+
+            const url = `https://api.cloudinary.com/v1_1/${cfg.cloudName}/image/upload`;
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', cfg.uploadPreset);
+
+            setUploadBusy(true);
+            try {
+                const res = await fetch(url, { method: 'POST', body: formData });
+                if (!res.ok) {
+                    let detail = `Error ${res.status}`;
+                    try { const j = await res.json(); detail = j.error?.message || detail; } catch (_) {}
+                    throw new Error(detail);
+                }
+                const data = await res.json();
+                // Rellenamos el campo de URL y mostramos la vista previa,
+                // igual que si el usuario hubiera pegado el enlace a mano.
+                document.getElementById('fieldImage').value = data.secure_url;
+                showPreview(data.secure_url);
+                showToast('Imagen subida correctamente.');
+                return data.secure_url;
+            } catch (err) {
+                console.warn('[Trade Fox Admin] Error subiendo a Cloudinary:', err);
+                showToast('No se pudo subir la imagen: ' + err.message, 'error');
+                return null;
+            } finally {
+                setUploadBusy(false);
+            }
+        }
+
+        // Helper: muestra la vista previa para una URL dada.
+        function showPreview(url) {
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
+            if (url) {
+                previewContainer.classList.remove('hidden');
+                previewImage.src = normalizeImageUrl(url);
+                previewImage.onerror = () => previewContainer.classList.add('hidden');
+            } else {
+                previewContainer.classList.add('hidden');
+                previewImage.src = '';
+            }
+        }
+
         // ===== LocalStorage Config =====
         function getConfig() {
             return {
                 sheetId: localStorage.getItem('tf_sheet_id') || '16hpM9D5UOnZ2C-qrhNSqugh-jKWAXXL661CfPGUQF40',
                 scriptUrl: localStorage.getItem('tf_script_url') || 'https://script.google.com/macros/s/AKfycbzdBxqHCq5Ou9f8PQW_nw6L3JmWJKY5mKjuvjg6KNNUS02vppB1ajk447kYlA4Tb32WiA/exec',
+                // Cloudinary (subida de imágenes desde el PC).
+                // Cloud name + upload preset SIN firma: son PÚBLICOS por diseño
+                // (no son secretos). Van aquí para que el navegador pueda subir
+                // imágenes directamente sin pasar por un servidor.
+                cloudName: localStorage.getItem('tf_cloudinary_cloud') || '',
+                uploadPreset: localStorage.getItem('tf_cloudinary_preset') || '',
             };
         }
 
         function saveConfig(cfg) {
             localStorage.setItem('tf_sheet_id', cfg.sheetId);
             localStorage.setItem('tf_script_url', cfg.scriptUrl);
+            localStorage.setItem('tf_cloudinary_cloud', cfg.cloudName || '');
+            localStorage.setItem('tf_cloudinary_preset', cfg.uploadPreset || '');
         }
 
         function loadConfigUI() {
             const cfg = getConfig();
             document.getElementById('configSheetId').value = cfg.sheetId;
             document.getElementById('configScriptUrl').value = cfg.scriptUrl;
+            document.getElementById('configCloudName').value = cfg.cloudName;
+            document.getElementById('configUploadPreset').value = cfg.uploadPreset;
         }
 
         // ===== Toast Notifications =====
@@ -565,7 +754,7 @@
                         category: cells[1]?.v?.toString().trim() || 'Otros',
                         condition: cells[2]?.v?.toString().trim() || 'Nuevo',
                         price: cells[3]?.v?.toString().trim() || 'Consultar',
-                        image: cells[4]?.v?.toString().trim() || DEFAULT_IMAGE,
+                        image: normalizeImageUrl(cells[4]?.v?.toString().trim()) || DEFAULT_IMAGE,
                     });
                 });
             } catch (err) {
@@ -755,12 +944,15 @@
         function resetForm() {
             document.getElementById('productForm').reset();
             document.getElementById('fieldImage').value = '';
+            document.getElementById('fileInput').value = '';
             currentImage = '';
             editingId = null;
             document.getElementById('modalTitle').textContent = 'Agregar Producto';
             document.getElementById('submitText').textContent = 'Guardar Producto';
             document.getElementById('previewContainer').classList.add('hidden');
             document.getElementById('previewImage').src = '';
+            setUploadBusy(false);
+            refreshUploadZone();
         }
 
         function fillForm(product) {
@@ -772,13 +964,8 @@
             currentImage = product.image;
 
             // Show preview if has image
-            if (product.image && product.image !== DEFAULT_IMAGE) {
-                document.getElementById('previewContainer').classList.remove('hidden');
-                document.getElementById('previewImage').src = product.image;
-            } else {
-                document.getElementById('previewContainer').classList.add('hidden');
-                document.getElementById('previewImage').src = '';
-            }
+            showPreview(product.image && product.image !== DEFAULT_IMAGE ? product.image : '');
+            refreshUploadZone();
         }
 
         // ===== CRUD Operations =====
@@ -788,6 +975,7 @@
             const condition = document.getElementById('fieldCondition').value;
             const price = document.getElementById('fieldPrice').value.trim();
             let image = document.getElementById('fieldImage').value.trim() || DEFAULT_IMAGE;
+            image = normalizeImageUrl(image);
 
             if (!title) {
                 showToast('El título es obligatorio.', 'error');
@@ -820,6 +1008,7 @@
             const condition = document.getElementById('fieldCondition').value;
             const price = document.getElementById('fieldPrice').value.trim();
             let image = document.getElementById('fieldImage').value.trim() || products[idx].image;
+            image = normalizeImageUrl(image);
 
             if (!title) {
                 showToast('El título es obligatorio.', 'error');
@@ -917,10 +1106,13 @@
                 saveConfig({
                     sheetId: document.getElementById('configSheetId').value.trim(),
                     scriptUrl: document.getElementById('configScriptUrl').value.trim(),
+                    cloudName: document.getElementById('configCloudName').value.trim(),
+                    uploadPreset: document.getElementById('configUploadPreset').value.trim(),
                 });
                 showToast('Configuración guardada.');
                 checkConnection();
                 closeConfigModal();
+                refreshUploadZone();
                 // Reload products with new config
                 loadProducts();
             });
@@ -929,25 +1121,53 @@
             document.getElementById('searchInput').addEventListener('input', renderTable);
             document.getElementById('filterCategory').addEventListener('change', renderTable);
 
+            // ===== Zona de subida de imagen (Cloudinary) =====
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+
+            // Clic en la zona → abrir selector (o Configuración si falta Cloudinary)
+            uploadZone.addEventListener('click', () => {
+                const cfg = getConfig();
+                if (!cfg.cloudName || !cfg.uploadPreset) {
+                    openConfigModal();
+                    return;
+                }
+                fileInput.click();
+            });
+
+            // Archivo seleccionado
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files && fileInput.files[0];
+                if (file) uploadImageToCloudinary(file);
+            });
+
+            // Drag & drop
+            ['dragenter', 'dragover'].forEach(evt => {
+                uploadZone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.add('drag-over');
+                });
+            });
+            ['dragleave', 'drop'].forEach(evt => {
+                uploadZone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.remove('drag-over');
+                });
+            });
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+                if (file) uploadImageToCloudinary(file);
+            });
+
             // Live image preview on URL input
             const fieldImage = document.getElementById('fieldImage');
-            const previewContainer = document.getElementById('previewContainer');
-            const previewImage = document.getElementById('previewImage');
-
             fieldImage.addEventListener('input', () => {
-                const url = fieldImage.value.trim();
-                if (url) {
-                    previewContainer.classList.remove('hidden');
-                    previewImage.src = url;
-                    // Si la imagen falla, ocultar preview
-                    previewImage.onerror = () => {
-                        previewContainer.classList.add('hidden');
-                    };
-                } else {
-                    previewContainer.classList.add('hidden');
-                    previewImage.src = '';
-                }
+                showPreview(fieldImage.value.trim());
             });
+
+            // Estado inicial de la zona de subida
+            refreshUploadZone();
         });
     })();
     </script>

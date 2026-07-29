@@ -173,34 +173,83 @@ productos de vuelta en tu hoja de Google Sheets.
    - Google Sheets ID:  pega el ID de tu hoja (Paso 1)
    - Google Apps Script URL:  pega el enlace del script (Paso 2)
 
-4. Haz clic en "Guardar".
+4. (Opcional pero recomendado) Completa también los 2 campos
+   de "Subida de imágenes (Cloudinary)" para poder subir
+   fotos desde el PC. Mira el PASO 4 de esta guía.
 
-5. ¡Listo! El panel ya está conectado y listo para usar.
+5. Haz clic en "Guardar".
+
+6. ¡Listo! El panel ya está conectado y listo para usar.
 
 
 ================================================================
   ¿CÓMO SUBIR IMÁGENES DE LOS PRODUCTOS?
 ================================================================
 
-Como las imágenes se gestionan por enlace (URL), necesitas
-subir primero la foto a internet y luego pegar el enlace
-en el campo "URL de la imagen".
+Ahora puedes subir las fotos DIRECTAMENTE desde tu PC,
+sin tener que pasarlas por otra web. Solo hay que
+configurar Cloudinary una vez (ver el PASO 4 de abajo).
 
-OPCIÓN RECOMENDADA — PostImages.org (gratis y sin cuenta):
-1. Entra a:  https://postimages.org
-2. Haz clic en "Elegir imágenes" y selecciona tu foto.
-3. (Opcional) Marca "Sin caducidad" para que no se borre.
-4. Haz clic en "Subir".
-5. Cuando termine, busca el enlace que dice "Hotlink para
-   foros" o "Imagen directa". Copia esa URL (debe terminar
-   en .jpg, .png o similar).
-6. Pega esa URL en el campo de imagen del producto.
+MODO PRINCIPAL — Subir desde el PC (lo más fácil):
+1. En el formulario del producto, busca la zona que dice
+   "Arrastrá la foto aquí o hacé clic para seleccionarla".
+2. Arrastra la foto desde tu carpeta y soltala ahí, O
+   haz clic en la zona y elige la foto en tu PC.
+3. Verás que dice "Subiendo imagen..." y luego aparece
+   la foto como vista previa. ¡Listo! La URL se completa
+   sola.
+   (Formatos: JPG, PNG o WEBP. Máximo 5 MB.)
 
-OPCIÓN 2 — Google Drive:
-1. Sube la imagen a tu Google Drive.
-2. Clic derecho en la imagen → "Compartir" →
-   "Cualquiera con el enlace".
-3. Copia el enlace y pégalo en el campo de imagen.
+MODO ALTERNATIVO — Pegar una URL:
+Si ya tienes un enlace de internet (de Google Drive,
+PostImages, etc.), puedes pegarlo en el campo "o pegá
+una URL" que está debajo de la zona de subida.
+- Para Google Drive: la imagen debe estar como
+  "Cualquiera con el enlace".
+
+
+================================================================
+  PASO 4: CONFIGURAR CLOUDINARY  (para subir desde el PC)
+================================================================
+
+Esto se hace UNA SOLA VEZ. Sirve para que el panel pueda
+subir las fotos de los productos a internet desde el PC.
+
+1. Crea una cuenta GRATIS en:
+     https://cloudinary.com/users/register_free
+
+2. Cuando entres, verás en la pantalla principal tu
+   "Cloud name" (nombre de la nube). Anótalo.
+   Ejemplo:  tradefox
+
+3. Crea un "preset" de subida sin firma:
+   - Ve al menú "Settings" (Configuración) → pestaña
+     "Upload" (Subida).
+   - Baja hasta la sección "Upload presets" y haz clic en
+     "Add upload preset".
+   - En "Signing mode" elige:  Unsigned  (¡MUY IMPORTANTE!).
+   - En "Preset name" ponle un nombre, por ejemplo:
+       tradefox_preset
+   - Haz clic en "Save".
+
+4. Ve al panel de administración de tu web
+   (tusitio.netlify.app/admin) → botón "Configuración".
+
+5. En la tarjeta "Subida de imágenes (Cloudinary)" completa:
+     Cloud name:      tu nombre de nube  (paso 2)
+     Upload preset:   tu nombre de preset (paso 3)
+
+6. Haz clic en "Guardar".
+
+¡Listo! Ya puedes subir fotos desde el PC en cualquier producto.
+
+NOTAS:
+- El plan gratis de Cloudinary es más que suficiente
+  para una tienda pequeña (25 GB de almacenamiento,
+  25 GB de transferencia al mes).
+- El "Cloud name" y el "preset sin firma" NO son secretos:
+  están pensados para usarse desde el navegador. No hay
+  peligro en ponerlos en la configuración.
 
 
 ================================================================
@@ -248,6 +297,18 @@ en tu hoja de Google Sheets y se reflejan en la web.
    → Verifica que la URL termine en .jpg, .png, etc.
    → Verifica que la imagen sea pública (cualquiera pueda verla).
    → Para Google Drive: debe estar como "Cualquiera con el enlace".
+
+❌ "Al subir desde el PC me dice 'Configurá Cloudinary primero'"
+   → Tienes que configurar Cloudinary. Mira el PASO 4.
+   → Revisa que en Configuración estén puestos el "Cloud name"
+     y el "Upload preset", y que este último sea "Unsigned".
+
+❌ "La foto pesa más de 5 MB"
+   → Recorta o comprime la imagen y vuelve a subirla.
+
+❌ "Error al subir la imagen: Maximum you can upload..."
+   → Tu cuenta de Cloudinary cambió a plan limitado o no es
+     gratuita. Revisa el panel de Cloudinary.
 
 ❌ "Error al cargar productos"
    → Verifica que la hoja esté PUBLICADA en la web.
