@@ -522,6 +522,21 @@
                 if (!res.ok) throw new Error('Respuesta ' + res.status);
                 const text = await res.text();
 
+                // gviz responde con /*O_o*/google.visualization.Query.setResponse({...}).
+                // Si falta esa marca, Google devolvió la página de LOGIN en lugar de
+                // los datos: la hoja NO es pública para lectura. Este es el problema
+                // nº1: el admin escribe bien (vía Apps Script) pero la lectura falla,
+                // así que los productos parecen "no guardarse" al recargar.
+                if (!/google\.visualization\.Query\.setResponse/.test(text)) {
+                    console.warn('[Trade Fox Admin] La hoja NO es pública para lectura (Google devolvió HTML de login).');
+                    products = [];
+                    showConnectionBanner('error',
+                        'La hoja de Google Sheets NO es pública. Los productos se guardan al añadirlos, pero no se pueden leer al recargar. ' +
+                        'Abre la hoja → Compartir → "Cualquiera con el enlace" (Lector) → Listo. Luego recarga esta página.');
+                    renderAll();
+                    return;
+                }
+
                 const jsonStart = text.indexOf('{');
                 const jsonEnd = text.lastIndexOf('}');
                 if (jsonStart === -1) throw new Error('Formato inválido');

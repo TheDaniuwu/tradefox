@@ -74,14 +74,34 @@ NOTA: Las fotos quedan mejor si son cuadradas o apaisadas
 
 
 ----------------------------------------------------------------
-PASO 5: HACER LA HOJA PÚBLICA
+PASO 5: HACER LA HOJA PÚBLICA  (¡MUY IMPORTANTE!)
 ----------------------------------------------------------------
-La web necesita poder LEER la hoja, así que hay que hacerla pública:
+La web necesita poder LEER la hoja sin contraseña. Para eso hay
+que hacer DOS cosas (las dos, no solo una):
 
-1. En la hoja, ve a:  Archivo  →  Compartir  →  Publicar en la web.
-2. Selecciona la pestaña "Productos".
-3. Marca "Volver a publicar automáticamente" (recomendado).
-4. Pulsa "Publicar" y confirma.
+  >>> ACCIÓN A: Compartir "con cualquier persona que tenga el enlace" <<<
+  ---------------------------------------------------------------
+  1. En la hoja, botón "Compartir" (arriba a la derecha).
+  2. En "Acceso general", cambia "Restringido" por:
+        "Cualquiera con el enlace"
+  3. A la derecha, deja el permiso en  "Lector"
+     (NO hace falta "Editor": el panel de administración escribe
+      a través del Apps Script, no con este permiso).
+  4. Pulsa "Listo" / "Guardar".
+
+  >>> ACCIÓN B: Publicar en la web <<<
+  ---------------------------------------------------------------
+  1. En la hoja, ve a:  Archivo  →  Compartir  →  Publicar en la web.
+  2. Selecciona la pestaña "Productos".
+  3. Marca "Volver a publicar automáticamente" (recomendado).
+  4. Pulsa "Publicar" y confirma.
+
+Si haces SOLO la acción B, ¡NO BASTA! El panel de administración
+podrá escribir productos (los verás en la hoja), pero la web NO
+los leerá y al recargar parecerá que "no se guardaron".
+Ese es el fallo nº1. La solución es completar también la ACCIÓN A.
+
+Tras cambiar ambos, espera ~30 segundos y recarga la web.
 
 ¡OJO! La información de los productos ya es pública para los
 visitantes de la web, así que NO pongas datos personales ni
@@ -139,6 +159,15 @@ PROBLEMAS FRECUENTES
 ----------------------------------------------------------------
 ❌ "La web sale con los productos de ejemplo, no los míos"
    → Tu SHEET_ID está vacío o mal pegado. Repasa el PASO 7.
+
+❌ "Añado un producto desde el admin, aparece en Google Sheets,
+   pero al RECARGAR la página desaparece (como si no se guardara)"
+   → CAUSA Nº1 DE SOPORTE. La hoja NO es pública para lectura.
+     El admin SÍ escribe (por eso lo ves en la hoja), pero la web
+     no puede leer de vuelta. Solución: completa el PASO 5 entero
+     (la ACCIÓN A: "Cualquiera con el enlace" es la que falta casi
+     siempre). Desde la v2, si esto ocurre, el panel de admin te
+     avisa con un mensaje claro al recargar.
 
 ❌ "La hoja dice error al cargar"
    → La hoja no es pública (PASO 5) o el nombre de la pestaña
