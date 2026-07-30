@@ -63,99 +63,64 @@ navegador antes de las 8 horas, borra las cookies del sitio.
   LO QUE NECESITAS ANTES DE EMPEZAR
 ================================================================
 
-1. Una hoja de cálculo de Google Sheets con tus productos
-   (si ya la creaste para la web pública, ¡usarás la misma!)
-2. Google Apps Script (se configura desde Google Sheets)
+1. Un proyecto de Firebase con Firestore (base de datos).
+   Es GRATIS y se hace una sola vez (PASO 1).
 
 
 ================================================================
-  PASO 1: CREAR O USAR TU HOJA DE GOOGLE SHEETS
+  PASO 1: CREAR TU BASE DE DATOS EN FIREBASE
 ================================================================
 
-Si ya tienes una hoja de Google Sheets con tus productos
-(configurada para la web), PUEDES SALTAR ESTE PASO.
+Firebase Firestore reemplaza a Google Sheets. Es más rápido,
+más robusto y NO requiere crear columnas ni nada manual: si
+mañana agregas un campo nuevo, Firebase lo guarda solo.
 
-Si no:
-1. Ve a:  https://sheets.new
-2. Cambia el nombre de la pestaña inferior a:  Productos
-3. En la FILA 1, pon estos encabezados:
-     A1 → Titulo
-     B1 → Categoria
-     C1 → Estado
-     D1 → Precio
-     E1 → Imagen
-4. Agrega tus productos a partir de la fila 2.
-5. Haz la hoja pública:
-   Archivo → Compartir → Publicar en la web → Publicar
-6. Copia el ID de la hoja (lo que está entre /d/ y /edit
-   en la URL del navegador).
+1. Entra en:  https://console.firebase.google.com
+2. Haz clic en "Agregar proyecto" (o "Crear proyecto").
+3. Ponle un nombre, por ejemplo:  tradefox
+4. Sigue los pasos (puedes desactivar Google Analytics).
+5. Cuando se cree el proyecto, haz clic en "Continuar".
+
+6. En el menú izquierdo, ve a:
+   "Compilación" → "Firestore Database".
+7. Haz clic en "Crear base de datos".
+8. Te pregunta dónde guardar los datos. Elige la región
+   más cercana a tu país y pulsa "Siguiente".
+9. IMPORTANTE — Reglas de seguridad:
+   Selecciona "Iniciar en modo de prueba" (test mode).
+   Esto permite leer y escribir sin login durante 30 días.
+   (Más abajo explico cómo dejarlo permanente.)
+10. Pulsa "Crear". ¡La base de datos ya está lista!
+
+NOTA: No necesitas crear ninguna tabla ni ninguna colección.
+El panel admin la crea sola ("products") al agregar el
+primer producto.
 
 
 ================================================================
-  PASO 2: CREAR EL APPS SCRIPT (PARA GUARDAR CAMBIOS)
+  PASO 2: CREAR UNA "WEB APP" EN FIREBASE
 ================================================================
 
-Este paso permite que el panel admin pueda GUARDAR los
-productos de vuelta en tu hoja de Google Sheets.
+Este paso te da los datos de conexión (API Key, etc.) que
+pegarás luego en el panel admin.
 
-1. Abre tu hoja de Google Sheets.
-2. En el menú superior, ve a:
-   Extensiones → Apps Script
-   (se abre una nueva pestaña con el editor de código).
-
-3. BORRA todo el código que aparezca y PEGA esto:
-
-   ----------------------------------------------------------------
-   function doPost(e) {
-     try {
-       var body = JSON.parse(e.postData.contents);
-       if (body.action !== 'save') {
-         return jsonResponse({ error: 'Acción no válida' }, 400);
-       }
-       var data = body.data;
-       var ss = SpreadsheetApp.getActiveSpreadsheet();
-       var sheet = ss.getSheetByName('Productos');
-       if (!sheet) return jsonResponse({ error: 'Hoja no encontrada' }, 404);
-
-       // Limpiar datos existentes (mantener encabezados)
-       var lastRow = sheet.getLastRow();
-       if (lastRow > 1) {
-         sheet.getRange(2, 1, lastRow - 1, 5).clearContent();
-       }
-
-       // Escribir nuevos datos
-       if (data && data.length > 0) {
-         sheet.getRange(2, 1, data.length, 5).setValues(data);
-       }
-
-       return jsonResponse({ success: true, rows: data.length });
-     } catch (err) {
-       return jsonResponse({ error: err.toString() }, 500);
-     }
-   }
-
-   function jsonResponse(data, code) {
-     return ContentService
-       .createTextOutput(JSON.stringify(data))
-       .setMimeType(ContentService.MimeType.JSON);
-   }
-   ----------------------------------------------------------------
-
-4. Guarda el proyecto (Ctrl + S o el icono de disquete).
-5. Ponle un nombre, por ejemplo: "Trade Fox Admin API".
-
-6. IMPORTANTE — Implementar como Web App:
-   - Haz clic en "Implementar" → "Nueva implementación".
-   - Tipo: "Aplicación web".
-   - Ejecutar como: "Yo".
-   - Quién tiene acceso: "Cualquier persona".
-   - Haz clic en "Implementar".
-   - Se te pedirá autorización. Haz clic en "Revisar permisos"
-     → "Avanzado" → "Ir a (nombre del proyecto)" → "Permitir".
-   - Se mostrará un ENLACE URL. ¡Cópialo!
-
-7. Ese enlace es lo que necesitas para el campo
-   "Google Apps Script URL" en la configuración del panel.
+1. Entra a tu proyecto de Firebase:
+   https://console.firebase.google.com
+2. En la página principal del proyecto, busca el icono web  </>
+   (está cerca del título del proyecto, junto a iOS/Android).
+   Haz clic ahí para "Agregar una app".
+3. Ponle un apodo, por ejemplo:  Trade Fox Web
+4. NO marques "Firebase Hosting" (ya tienes Netlify).
+5. Haz clic en "Registrar app".
+6. Firebase te muestra un bloque de código con tus datos.
+   Anota estos 6 valores (los necesitarás después):
+     - apiKey               (ej: AIzaSyA1b2c3...)
+     - authDomain           (ej: tradefox.firebaseapp.com)
+     - projectId            (ej: tradefox-12345)
+     - storageBucket        (ej: tradefox-12345.appspot.com)
+     - messagingSenderId    (ej: 123456789012)
+     - appId                (ej: 1:123456789012:web:abc123...)
+7. Haz clic en "Siguiente" → "Ir a la consola".
 
 
 ================================================================
@@ -169,17 +134,56 @@ productos de vuelta en tu hoja de Google Sheets.
 2. Haz clic en el botón "Configuración" (icono de engranaje)
    arriba a la derecha.
 
-3. Completa los 2 campos:
-   - Google Sheets ID:  pega el ID de tu hoja (Paso 1)
-   - Google Apps Script URL:  pega el enlace del script (Paso 2)
+3. En la tarjeta "Firebase (Base de datos)" completa los 6
+   campos con los datos del PASO 2:
+     - API Key
+     - Auth Domain
+     - Project ID
+     - Storage Bucket (opcional)
+     - Messaging Sender ID (opcional)
+     - App ID
 
 4. (Opcional pero recomendado) Completa también los 2 campos
    de "Subida de imágenes (Cloudinary)" para poder subir
-   fotos desde el PC. Mira el PASO 4 de esta guía.
+   fotos desde el PC. Mira el PASO 5 de esta guía.
 
 5. Haz clic en "Guardar".
 
 6. ¡Listo! El panel ya está conectado y listo para usar.
+   Debe aparecer un banner verde que dice
+   "Conectado a Firebase Firestore".
+
+
+================================================================
+  PASO 4: DEJAR LAS REGLAS DE FIRESTORE PERMANENTES
+================================================================
+
+Al crear la base de datos elegiste "modo de prueba", que
+caduca a los 30 días. Para que tu web nunca deje de
+funcionar, cambia las reglas:
+
+1. Entra a tu proyecto de Firebase:
+   https://console.firebase.google.com
+2. Ve a:  Firestore Database  →  pestaña "Reglas".
+3. Borra el contenido y PEGA esto:
+
+   ----------------------------------------------------------------
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /{document=**} {
+         allow read, write: if true;
+       }
+     }
+   }
+   ----------------------------------------------------------------
+
+4. Haz clic en "Publicar".
+
+NOTA: Estas reglas permiten leer y escribir a cualquiera.
+Para una tienda pequeña donde el admin está protegido por
+contraseña en Netlify, es perfectamente válido. Si en el
+futuro quieres más seguridad, puedes usar Firebase Auth.
 
 
 ================================================================
@@ -188,7 +192,7 @@ productos de vuelta en tu hoja de Google Sheets.
 
 Ahora puedes subir las fotos DIRECTAMENTE desde tu PC,
 sin tener que pasarlas por otra web. Solo hay que
-configurar Cloudinary una vez (ver el PASO 4 de abajo).
+configurar Cloudinary una vez (ver el PASO 5 de abajo).
 
 MODO PRINCIPAL — Subir desde el PC (lo más fácil):
 1. En el formulario del producto, busca la zona que dice
@@ -209,7 +213,7 @@ una URL" que está debajo de la zona de subida.
 
 
 ================================================================
-  PASO 4: CONFIGURAR CLOUDINARY  (para subir desde el PC)
+  PASO 5: CONFIGURAR CLOUDINARY  (para subir desde el PC)
 ================================================================
 
 Esto se hace UNA SOLA VEZ. Sirve para que el panel pueda
@@ -258,7 +262,7 @@ NOTAS:
 
 AGREGAR UN PRODUCTO:
 1. Haz clic en "Agregar Producto".
-2. Completa: Título, Categoría, Estado y Precio.
+2. Completa: Título, Plataforma, Categoría, Estado y Precio.
 3. Pega el enlace (URL) de la imagen (ver sección anterior).
    Verás una vista previa de la imagen al pegar el enlace.
    Si no pones nada, se usará una imagen por defecto.
@@ -276,22 +280,23 @@ ELIMINAR UN PRODUCTO:
 3. Confirma la eliminación.
 
 NOTA: Todos los cambios se guardan AUTOMÁTICAMENTE
-en tu hoja de Google Sheets y se reflejan en la web.
+en Firebase Firestore y se reflejan en la web.
 
 
 ================================================================
   SOLUCIÓN DE PROBLEMAS
 ================================================================
 
-❌ "No hay hoja de Google Sheets configurada"
-   → Ve a Configuración y pega tu Sheet ID.
+❌ "No hay Firebase configurado"
+   → Ve a Configuración y completa los datos de Firebase
+     (PASO 2 y 3 de esta guía).
 
-❌ "Falta el URL de Apps Script"
-   → Completa el PASO 2 de esta guía.
-
-❌ "Los cambios no se guardan"
-   → Verifica que el URL de Apps Script sea correcto.
-   → Verifica que el Apps Script esté "Implementado" como web app.
+❌ "Los cambios no se guardan" / "Error al guardar en Firebase"
+   → Verifica que los 6 datos de Firebase sean correctos.
+   → Verifica que las reglas de Firestore permitan escritura
+     (PASO 4 de esta guía).
+   → Verifica que el "Project ID" coincida exactamente con
+     el de tu proyecto de Firebase.
 
 ❌ "La imagen no aparece / no carga"
    → Verifica que la URL termine en .jpg, .png, etc.
@@ -299,7 +304,7 @@ en tu hoja de Google Sheets y se reflejan en la web.
    → Para Google Drive: debe estar como "Cualquiera con el enlace".
 
 ❌ "Al subir desde el PC me dice 'Configurá Cloudinary primero'"
-   → Tienes que configurar Cloudinary. Mira el PASO 4.
+   → Tienes que configurar Cloudinary. Mira el PASO 5.
    → Revisa que en Configuración estén puestos el "Cloud name"
      y el "Upload preset", y que este último sea "Unsigned".
 
@@ -311,9 +316,30 @@ en tu hoja de Google Sheets y se reflejan en la web.
      gratuita. Revisa el panel de Cloudinary.
 
 ❌ "Error al cargar productos"
-   → Verifica que la hoja esté PUBLICADA en la web.
-   → Verifica que la pestaña se llame exactamente "Productos".
-   → Verifica que el Sheet ID sea correcto.
+   → Verifica que los datos de Firebase sean correctos.
+   → Verifica que la colección se llame "products"
+     (se crea sola al agregar el primer producto).
+   → Verifica las reglas de Firestore (PASO 4).
+
+
+================================================================
+  MIGRAR DESDE GOOGLE SHEETS (si ya tenías productos)
+================================================================
+
+Si ya tenías productos en Google Sheets y quieres pasarlos
+a Firebase, tienes dos opciones:
+
+OPCIÓN A — Volver a cargarlos a mano (lo más fácil si son pocos):
+   Entra al panel admin y crea cada producto de nuevo.
+   Firebase guarda todo automáticamente.
+
+OPCIÓN B — Exportar desde Sheets e importar a Firestore:
+   1. En tu Google Sheet: Archivo → Descargar → CSV.
+   2. Usa la herramienta gratuita "CSV to Firestore":
+      https://fireship.io/tools/csv-to-firestore/
+      o cualquier conversor online similar.
+   3. Apunta a tu proyecto de Firebase (mismo Project ID).
+   4. Sube el archivo. ¡Listo!
 
 
 ================================================================
@@ -328,8 +354,13 @@ en tu hoja de Google Sheets y se reflejan en la web.
   (Netlify Edge Function + variable de entorno ADMIN_PASSWORD).
   Ver el PASO 0 al principio de esta guía para configurarla.
 
-- La hoja de Google Sheets debe estar PUBLICADA para que
-  la web pública pueda leer los productos.
+- Firebase tiene un plan gratis (Spark) muy generoso:
+  50.000 lecturas + 20.000 escrituras + 1 GB de almacenamiento
+  por día. Es más que suficiente para una tienda.
+
+- A diferencia de Google Sheets, Firebase NO requiere que
+  agregues columnas ni reconfigures nada si agregas campos
+  nuevos al código. Todo se guarda automáticamente.
 
 ================================================================
   ¿Dudas? Revisa esta guía paso a paso con calma. 🦊🎮

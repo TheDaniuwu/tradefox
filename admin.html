@@ -17,6 +17,10 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- Firebase SDK (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
     <!-- Tailwind Custom Config (igual que index.html) -->
     <script>
         tailwind.config = {
@@ -212,6 +216,7 @@
                     <option value="Todos">Todas las categorías</option>
                     <option value="Consolas">Consolas</option>
                     <option value="Juegos Físicos">Juegos Físicos</option>
+                    <option value="Juegos Digitales">Juegos Digitales</option>
                     <option value="Mandos">Mandos</option>
                     <option value="Accesorios">Accesorios</option>
                 </select>
@@ -416,27 +421,42 @@
                 </button>
             </div>
             <div class="p-6 space-y-6">
-                <!-- Google Sheets Config -->
+                <!-- Firebase Config -->
                 <div class="bg-fox-darker rounded-xl p-5 border border-white/5">
                     <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-                        <i data-lucide="table" class="w-4 h-4 text-fox-orange"></i>
-                        Google Sheets
+                        <i data-lucide="database" class="w-4 h-4 text-fox-orange"></i>
+                        Firebase (Base de datos)
                     </h3>
-                    <p class="text-xs text-gray-500 mb-4">ID de la hoja de cálculo de Google Sheets</p>
-                    <input type="text" id="configSheetId" placeholder="Ej: 1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9Qr0"
-                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono" />
-                </div>
+                    <p class="text-xs text-gray-500 mb-4">Configuración de tu proyecto de Firebase Firestore.</p>
 
-                <!-- Apps Script URL -->
-                <div class="bg-fox-darker rounded-xl p-5 border border-white/5">
-                    <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-                        <i data-lucide="code" class="w-4 h-4 text-fox-orange"></i>
-                        Google Apps Script URL
-                    </h3>
-                    <p class="text-xs text-gray-500 mb-4">URL del endpoint de Apps Script para guardar cambios</p>
-                    <input type="url" id="configScriptUrl" placeholder="https://script.google.com/macros/s/..."
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">API Key</label>
+                    <input type="text" id="configApiKey" placeholder="Ej: AIzaSyA...BcD"
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono mb-3" />
+
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Auth Domain</label>
+                    <input type="text" id="configAuthDomain" placeholder="Ej: tradefox-12345.firebaseapp.com"
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono mb-3" />
+
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Project ID</label>
+                    <input type="text" id="configProjectId" placeholder="Ej: tradefox-12345"
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono mb-3" />
+
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Storage Bucket (opcional)</label>
+                    <input type="text" id="configStorageBucket" placeholder="Ej: tradefox-12345.appspot.com"
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono mb-3" />
+
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Messaging Sender ID (opcional)</label>
+                    <input type="text" id="configMessagingSenderId" placeholder="Ej: 123456789012"
+                           class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono mb-3" />
+
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">App ID</label>
+                    <input type="text" id="configAppId" placeholder="Ej: 1:123456789012:web:abc123def456"
                            class="w-full px-4 py-2.5 bg-fox-dark border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all text-sm font-mono" />
-                    <p class="text-xs text-gray-600 mt-2">Instrucciones para crear el Apps Script en la guía de configuración.</p>
+
+                    <p class="text-xs text-gray-600 mt-3 flex items-start gap-1.5">
+                        <i data-lucide="info" class="w-3 h-3 mt-0.5 flex-shrink-0"></i>
+                        <span>Todos estos datos te los da Firebase al crear una "Web App" en tu proyecto. Instrucciones detalladas en la guía de configuración.</span>
+                    </p>
                 </div>
 
                 <!-- Cloudinary (subida de imágenes desde el PC) -->
@@ -627,8 +647,12 @@
         // ===== LocalStorage Config =====
         function getConfig() {
             return {
-                sheetId: localStorage.getItem('tf_sheet_id') || '16hpM9D5UOnZ2C-qrhNSqugh-jKWAXXL661CfPGUQF40',
-                scriptUrl: localStorage.getItem('tf_script_url') || 'https://script.google.com/macros/s/AKfycbzdBxqHCq5Ou9f8PQW_nw6L3JmWJKY5mKjuvjg6KNNUS02vppB1ajk447kYlA4Tb32WiA/exec',
+                apiKey: localStorage.getItem('tf_firebase_apiKey') || '',
+                authDomain: localStorage.getItem('tf_firebase_authDomain') || '',
+                projectId: localStorage.getItem('tf_firebase_projectId') || '',
+                storageBucket: localStorage.getItem('tf_firebase_storageBucket') || '',
+                messagingSenderId: localStorage.getItem('tf_firebase_messagingSenderId') || '',
+                appId: localStorage.getItem('tf_firebase_appId') || '',
                 // Cloudinary (subida de imágenes desde el PC).
                 // Cloud name + upload preset SIN firma: son PÚBLICOS por diseño
                 // (no son secretos). Van aquí para que el navegador pueda subir
@@ -639,18 +663,59 @@
         }
 
         function saveConfig(cfg) {
-            localStorage.setItem('tf_sheet_id', cfg.sheetId);
-            localStorage.setItem('tf_script_url', cfg.scriptUrl);
+            localStorage.setItem('tf_firebase_apiKey', cfg.apiKey || '');
+            localStorage.setItem('tf_firebase_authDomain', cfg.authDomain || '');
+            localStorage.setItem('tf_firebase_projectId', cfg.projectId || '');
+            localStorage.setItem('tf_firebase_storageBucket', cfg.storageBucket || '');
+            localStorage.setItem('tf_firebase_messagingSenderId', cfg.messagingSenderId || '');
+            localStorage.setItem('tf_firebase_appId', cfg.appId || '');
             localStorage.setItem('tf_cloudinary_cloud', cfg.cloudName || '');
             localStorage.setItem('tf_cloudinary_preset', cfg.uploadPreset || '');
         }
 
         function loadConfigUI() {
             const cfg = getConfig();
-            document.getElementById('configSheetId').value = cfg.sheetId;
-            document.getElementById('configScriptUrl').value = cfg.scriptUrl;
+            document.getElementById('configApiKey').value = cfg.apiKey;
+            document.getElementById('configAuthDomain').value = cfg.authDomain;
+            document.getElementById('configProjectId').value = cfg.projectId;
+            document.getElementById('configStorageBucket').value = cfg.storageBucket;
+            document.getElementById('configMessagingSenderId').value = cfg.messagingSenderId;
+            document.getElementById('configAppId').value = cfg.appId;
             document.getElementById('configCloudName').value = cfg.cloudName;
             document.getElementById('configUploadPreset').value = cfg.uploadPreset;
+        }
+
+        // ===== Inicialización de Firebase =====
+        let db = null;
+        function initFirebase() {
+            const cfg = getConfig();
+            if (cfg.apiKey && cfg.projectId) {
+                try {
+                    // Reiniciar si ya estaba inicializado
+                    if (firebase.apps.length > 0) {
+                        // Ya inicializado, solo reutilizamos
+                        db = firebase.firestore();
+                        return true;
+                    }
+                    const firebaseConfig = {
+                        apiKey: cfg.apiKey,
+                        authDomain: cfg.authDomain,
+                        projectId: cfg.projectId,
+                        storageBucket: cfg.storageBucket || undefined,
+                        messagingSenderId: cfg.messagingSenderId || undefined,
+                        appId: cfg.appId,
+                    };
+                    firebase.initializeApp(firebaseConfig);
+                    db = firebase.firestore();
+                    return true;
+                } catch (err) {
+                    console.warn('[Trade Fox Admin] Error inicializando Firebase:', err);
+                    db = null;
+                    return false;
+                }
+            }
+            db = null;
+            return false;
         }
 
         // ===== Toast Notifications =====
@@ -701,107 +766,86 @@
 
         function checkConnection() {
             const cfg = getConfig();
-            if (!cfg.sheetId) {
-                showConnectionBanner('warning', 'No hay hoja de Google Sheets configurada. Ve a Configuración para conectar tu hoja.');
-            } else if (!cfg.scriptUrl) {
-                showConnectionBanner('warning', 'Falta el URL de Apps Script. Sin este, los cambios no se guardarán en la hoja. Ve a Configuración.');
+            if (!cfg.apiKey || !cfg.projectId) {
+                showConnectionBanner('warning', 'No hay Firebase configurado. Ve a Configuración para conectar tu base de datos Firebase Firestore.');
             } else {
-                showConnectionBanner('success', 'Conectado a Google Sheets. Los cambios se guardan automáticamente.');
+                showConnectionBanner('success', 'Conectado a Firebase Firestore. Los cambios se guardan automáticamente.');
             }
         }
 
-        // ===== Load Products from Google Sheets =====
+        // ===== Load Products from Firebase Firestore =====
         async function loadProducts() {
-            const cfg = getConfig();
-            if (!cfg.sheetId) {
+            if (!db) {
                 products = [];
                 renderAll();
                 return;
             }
 
-            const url = `https://docs.google.com/spreadsheets/d/${cfg.sheetId}/gviz/tq?tqx=out:json&sheet=Productos`;
-
             try {
-                const res = await fetch(url, { cache: 'no-store' });
-                if (!res.ok) throw new Error('Respuesta ' + res.status);
-                const text = await res.text();
+                const snapshot = await db.collection('products').get();
 
-                // gviz responde con /*O_o*/google.visualization.Query.setResponse({...}).
-                // Si falta esa marca, Google devolvió la página de LOGIN en lugar de
-                // los datos: la hoja NO es pública para lectura. Este es el problema
-                // nº1: el admin escribe bien (vía Apps Script) pero la lectura falla,
-                // así que los productos parecen "no guardarse" al recargar.
-                if (!/google\.visualization\.Query\.setResponse/.test(text)) {
-                    console.warn('[Trade Fox Admin] La hoja NO es pública para lectura (Google devolvió HTML de login).');
+                if (snapshot.empty) {
                     products = [];
-                    showConnectionBanner('error',
-                        'La hoja de Google Sheets NO es pública. Los productos se guardan al añadirlos, pero no se pueden leer al recargar. ' +
-                        'Abre la hoja → Compartir → "Cualquiera con el enlace" (Lector) → Listo. Luego recarga esta página.');
                     renderAll();
                     return;
                 }
 
-                const jsonStart = text.indexOf('{');
-                const jsonEnd = text.lastIndexOf('}');
-                if (jsonStart === -1) throw new Error('Formato inválido');
-                const data = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
-
-                const rows = data.table.rows;
-                if (!rows) throw new Error('No hay filas');
-
-                // Detectar si la primera fila es un encabezado o datos.
-                const HEADER_KEYWORDS = ['titulo', 'título', 'categoria', 'categoría', 'estado', 'precio', 'imagen', 'nombre', 'name', 'title'];
-                const firstCell = rows[0]?.c?.[0]?.v?.toString().trim().toLowerCase() || '';
-                const firstRowIsHeader = HEADER_KEYWORDS.some(kw => firstCell === kw);
-                const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
-                if (!firstRowIsHeader) {
-                    console.warn('[Trade Fox Admin] No se detectó fila de encabezados; se leen todas las filas.');
-                }
-
                 products = [];
-                dataRows.forEach((row, idx) => {
-                    const cells = row.c || [];
-                    const title = cells[0]?.v?.toString().trim();
+                let idx = 0;
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    const title = (d.title || '').toString().trim();
                     if (!title) return;
+                    idx++;
                     products.push({
-                        id: idx + 1,
+                        id: doc.id,
                         title,
-                        category: cells[1]?.v?.toString().trim() || 'Otros',
-                        condition: cells[2]?.v?.toString().trim() || 'Nuevo',
-                        price: cells[3]?.v?.toString().trim() || 'Consultar',
-                        image: normalizeImageUrl(cells[4]?.v?.toString().trim()) || DEFAULT_IMAGE,
-                        platform: cells[5]?.v?.toString().trim() || '',
+                        category: (d.category || 'Otros').toString().trim(),
+                        condition: (d.condition || 'Nuevo').toString().trim(),
+                        price: (d.price || 'Consultar').toString().trim(),
+                        image: normalizeImageUrl((d.image || '').toString().trim()) || DEFAULT_IMAGE,
+                        platform: (d.platform || '').toString().trim(),
                     });
                 });
+
+                console.info(`[Trade Fox Admin] ${products.length} productos cargados desde Firebase.`);
             } catch (err) {
                 console.warn('[Trade Fox Admin] Error cargando productos:', err);
-                showToast('Error al cargar productos. Verifica la configuración.', 'error');
+                showToast('Error al cargar productos. Verifica la configuración de Firebase.', 'error');
                 products = [];
             }
             renderAll();
         }
 
-        // ===== Save Products to Google Sheets (via Apps Script) =====
-        async function saveToSheet(productsData) {
-            const cfg = getConfig();
-            if (!cfg.scriptUrl) {
-                showToast('No hay URL de Apps Script configurado. Los cambios no se guardaron.', 'error');
+        // ===== Save Products to Firebase Firestore =====
+        async function saveToFirestore(productsData) {
+            if (!db) {
+                showToast('Firebase no configurado. Ve a Configuración.', 'error');
                 return false;
             }
 
             try {
-                const payload = productsData.map(p => [p.title, p.category, p.condition, p.price, p.image, p.platform]);
-                const res = await fetch(cfg.scriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'save', data: payload }),
+                // Estrategia: borrar toda la colección y reescribir.
+                // Igual que con Sheets, pero sin Apps Script.
+                const batch = db.batch();
+                const snapshot = await db.collection('products').get();
+                snapshot.forEach(doc => batch.delete(doc.ref));
+                productsData.forEach(p => {
+                    const newRef = db.collection('products').doc();
+                    batch.set(newRef, {
+                        title: p.title,
+                        category: p.category,
+                        condition: p.condition,
+                        price: p.price,
+                        image: p.image,
+                        platform: p.platform || '',
+                    });
                 });
-                // mode: no-cors doesn't let us read the response, but it fired
+                await batch.commit();
                 return true;
             } catch (err) {
-                console.warn('[Trade Fox Admin] Error guardando:', err);
-                showToast('Error al guardar en Google Sheets.', 'error');
+                console.warn('[Trade Fox Admin] Error guardando en Firebase:', err);
+                showToast('Error al guardar en Firebase: ' + (err.message || ''), 'error');
                 return false;
             }
         }
@@ -1006,8 +1050,9 @@
                 return;
             }
 
+            // ID temporal: Firestore lo reemplaza por el real al recargar
             const newProduct = {
-                id: products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1,
+                id: 'tmp_' + Date.now(),
                 title,
                 category,
                 condition,
@@ -1017,8 +1062,12 @@
             };
 
             products.push(newProduct);
-            saveToSheet(products).then(ok => {
-                if (ok) showToast('Producto agregado correctamente.');
+            saveToFirestore(products).then(ok => {
+                if (ok) {
+                    showToast('Producto agregado correctamente.');
+                    // Recargar para obtener el ID real de Firestore
+                    loadProducts();
+                }
             });
             closeModal();
             renderAll();
@@ -1042,7 +1091,7 @@
             }
 
             products[idx] = { ...products[idx], title, category, condition, price, image, platform };
-            saveToSheet(products).then(ok => {
+            saveToFirestore(products).then(ok => {
                 if (ok) showToast('Producto actualizado correctamente.');
             });
             closeModal();
@@ -1054,9 +1103,7 @@
             if (idx === -1) return;
 
             products.splice(idx, 1);
-            // Reassign IDs
-            products.forEach((p, i) => p.id = i + 1);
-            saveToSheet(products).then(ok => {
+            saveToFirestore(products).then(ok => {
                 if (ok) showToast('Producto eliminado.');
             });
             closeDeleteModal();
@@ -1085,7 +1132,8 @@
             // Initialize Lucide
             lucide.createIcons();
 
-            // Load products
+            // Initialize Firebase, then load products
+            initFirebase();
             loadProducts().then(() => {
                 checkConnection();
             });
@@ -1130,8 +1178,12 @@
             });
             document.getElementById('btnSaveConfig').addEventListener('click', () => {
                 saveConfig({
-                    sheetId: document.getElementById('configSheetId').value.trim(),
-                    scriptUrl: document.getElementById('configScriptUrl').value.trim(),
+                    apiKey: document.getElementById('configApiKey').value.trim(),
+                    authDomain: document.getElementById('configAuthDomain').value.trim(),
+                    projectId: document.getElementById('configProjectId').value.trim(),
+                    storageBucket: document.getElementById('configStorageBucket').value.trim(),
+                    messagingSenderId: document.getElementById('configMessagingSenderId').value.trim(),
+                    appId: document.getElementById('configAppId').value.trim(),
                     cloudName: document.getElementById('configCloudName').value.trim(),
                     uploadPreset: document.getElementById('configUploadPreset').value.trim(),
                 });
@@ -1139,7 +1191,8 @@
                 checkConnection();
                 closeConfigModal();
                 refreshUploadZone();
-                // Reload products with new config
+                // Re-inicializar Firebase con la nueva config y recargar productos
+                initFirebase();
                 loadProducts();
             });
 

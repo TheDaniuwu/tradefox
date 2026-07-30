@@ -1,191 +1,100 @@
 ===================================================================
-  TRADE FOX 🦊  —  GUÍA PARA AÑADIR PRODUCTOS CON GOOGLE SHEETS
+  TRADE FOX 🦊  —  GUÍA PARA GESTIONAR PRODUCTOS
 ===================================================================
 
-Esta guía te explica, PASO A PASO y SIN TOCAR CÓDIGO, cómo
-gestionar los productos de tu tienda desde una hoja de cálculo
-de Google (como si fuera Excel). Cualquier cambio que hagas en
-la hoja se verá REFLEJADO EN LA WEB automáticamente.
+¡ATENCIÓN! Esta tienda ahora usa FIREBASE FIRESTORE como base
+de datos. Ya NO usa Google Sheets.
+
+Esta guía explica, PASO A PASO y SIN TOCAR CÓDIGO, cómo
+gestionar los productos de tu tienda. Cualquier cambio que
+hagas se verá REFLEJADO EN LA WEB automáticamente.
 
 
 ----------------------------------------------------------------
-PASO 1: CREAR LA HOJA DE CÁLCULO
+LA FORMA FÁCIL: PANEL DE ADMINISTRACIÓN
 ----------------------------------------------------------------
-1. Entra a:  https://sheets.new
-   (se abrirá una hoja de cálculo nueva automáticamente).
 
-2. Cambia el nombre de la hoja (arriba a la izquierda) a:
-       Productos Trade Fox
+La forma más sencilla de gestionar tus productos es desde
+el PANEL DE ADMINISTRACIÓN:
 
-3. IMPORTANTE — Cambia el nombre de la PESTAÑA inferior
-   (que por defecto dice "Hoja 1") a:
-       Productos
-   Para hacerlo: doble clic sobre "Hoja 1" → escribe "Productos" → Enter.
+1. Entra en:  tusitio.netlify.app/admin
+2. Escribe tu contraseña.
+3. Ahí puedes:
+   - AGREGAR productos (botón "Agregar Producto").
+   - EDITAR productos (icono de lápiz ✏️).
+   - ELIMINAR productos (icono de papelera 🗑️).
+4. Los cambios se guardan automáticamente en Firebase
+   y aparecen en la web al instante.
 
-
-----------------------------------------------------------------
-PASO 2: PONER LOS ENCABEZADOS
-----------------------------------------------------------------
-En la FILA 1, escribe estos títulos EXACTOS (uno por columna):
-
-    |     A     |     B      |     C      |    D    |     E     |
-    |-----------|------------|------------|---------|-----------|
-    |  Titulo   | Categoria  |  Estado    |  Precio |   Imagen  |
-
-- A1 → Titulo
-- B1 → Categoria
-- C1 → Estado
-- D1 → Precio
-- E1 → Imagen
+NOTA: Antes de usar el panel, debes configurar Firebase.
+Sigue los pasos de la guía:
+    COMO-CONFIGURAR-ADMIN.txt
 
 
 ----------------------------------------------------------------
-PASO 3: AÑADIR TUS PRODUCTOS
+CÓMO AÑADIR UN PRODUCTO DESDE EL PANEL
 ----------------------------------------------------------------
-A partir de la FILA 2, pon un producto por fila. Ejemplo:
+1. Entra al panel de administración.
+2. Haz clic en "Agregar Producto".
+3. Completa los campos:
+   - Título:      nombre del producto (ej: PlayStation 5 Slim)
+   - Plataforma:  PS3 / PS4 / PS5 / Xbox
+   - Categoría:   Consolas / Juegos Físicos / Juegos Digitales
+                  / Mandos / Accesorios
+   - Estado:      Nuevo / Seminuevo
+   - Precio:      el número (se muestra con "S/." automáticamente)
+   - Imagen:      sube una foto desde tu PC, o pega una URL.
+4. Haz clic en "Guardar Producto".
 
-    | Titulo              | Categoria      | Estado     | Precio    | Imagen (URL)                                   |
-    |---------------------|----------------|------------|-----------|------------------------------------------------|
-    | PlayStation 5 Slim  | Consolas       | Nuevo      | S/ 2,499  | https://...imagen.jpg                          |
-    | DualSense PS5       | Mandos         | Nuevo      | S/ 299    | https://...imagen.jpg                          |
-    | God of War Ragnarök | Juegos Físicos | Seminuevo | S/ 189    | https://...imagen.jpg                          |
-
-REGLAS IMPORTANTES:
-- "Categoria" debe ser una de estas (escríbela IGUAL):
-      Consolas / Juegos Físicos / Mandos / Accesorios
-- "Estado" debe ser:  Nuevo  o  Seminuevo
-- "Precio" puede llevar el símbolo "S/" o solo el número.
-- "Imagen" debe ser un ENLACE (URL) que termine en .jpg o .png.
-  (Si dejas la imagen vacía, saldrá una imagen por defecto).
+¡Listo! El producto aparece en la web.
 
 
 ----------------------------------------------------------------
-PASO 4: CONSEGUIR UNA URL DE IMAGEN
+¿CÓMO SUBIR LAS FOTOS DE LOS PRODUCTOS?
 ----------------------------------------------------------------
-Para la columna "Imagen", necesitas el ENLACE directo a la foto:
+Tienes dos opciones:
 
-1. Sube la foto a Google Drive (o usa Imgur, sube la imagen).
-2. Si usas Drive: clic derecho en la foto → "Compartir" →
-   ponlo como "Cualquiera con el enlace" → Copiar enlace.
-3. Pega ese enlace en la columna "Imagen".
+OPCIÓN A — Subir desde el PC (lo más fácil):
+   1. En el formulario, busca la zona "Arrastrá la foto aquí...".
+   2. Arrastra la foto o haz clic para elegirla.
+   3. Se sube sola y se ve la vista previa.
+   (Requiere configurar Cloudinary una vez. Ver guía
+    COMO-CONFIGURAR-ADMIN.txt, PASO 5.)
 
-NOTA: Las fotos quedan mejor si son cuadradas o apaisadas
-(aprox. 600x400 px).
-
-💡 CONSEJO: Si editas los productos desde el PANEL DE
-ADMINISTRACIÓN (tusitio.netlify.app/admin), puedes subir
-las fotos DIRECTAMENTE desde tu PC, sin tener que buscarles
-un enlace. Solo tienes que configurar Cloudinary una vez
-(ver la guía "COMO-CONFIGURAR-ADMIN.txt", PASO 4).
-
-
-----------------------------------------------------------------
-PASO 5: HACER LA HOJA PÚBLICA  (¡MUY IMPORTANTE!)
-----------------------------------------------------------------
-La web necesita poder LEER la hoja sin contraseña. Para eso hay
-que hacer DOS cosas (las dos, no solo una):
-
-  >>> ACCIÓN A: Compartir "con cualquier persona que tenga el enlace" <<<
-  ---------------------------------------------------------------
-  1. En la hoja, botón "Compartir" (arriba a la derecha).
-  2. En "Acceso general", cambia "Restringido" por:
-        "Cualquiera con el enlace"
-  3. A la derecha, deja el permiso en  "Lector"
-     (NO hace falta "Editor": el panel de administración escribe
-      a través del Apps Script, no con este permiso).
-  4. Pulsa "Listo" / "Guardar".
-
-  >>> ACCIÓN B: Publicar en la web <<<
-  ---------------------------------------------------------------
-  1. En la hoja, ve a:  Archivo  →  Compartir  →  Publicar en la web.
-  2. Selecciona la pestaña "Productos".
-  3. Marca "Volver a publicar automáticamente" (recomendado).
-  4. Pulsa "Publicar" y confirma.
-
-Si haces SOLO la acción B, ¡NO BASTA! El panel de administración
-podrá escribir productos (los verás en la hoja), pero la web NO
-los leerá y al recargar parecerá que "no se guardaron".
-Ese es el fallo nº1. La solución es completar también la ACCIÓN A.
-
-Tras cambiar ambos, espera ~30 segundos y recarga la web.
-
-¡OJO! La información de los productos ya es pública para los
-visitantes de la web, así que NO pongas datos personales ni
-contraseñas en esta hoja.
-
-
-----------------------------------------------------------------
-PASO 6: COPIAR EL ID DE LA HOJA
-----------------------------------------------------------------
-1. Mira la BARRA DE DIRECCIONES del navegador con la hoja abierta.
-   Verás algo así:
-
-   https://docs.google.com/spreadsheets/d/1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9Qr0/edit#gid=0
-                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                            ESTO ES EL ID
-
-2. El ID es la parte LARGA entre "/d/" y "/edit".
-   En el ejemplo sería:   1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9Qr0
-
-3. Copia ese ID.
-
-
-----------------------------------------------------------------
-PASO 7: PEGAR EL ID EN LA WEB
-----------------------------------------------------------------
-1. Abre el archivo  index.html  con el Bloc de Notas
-   (clic derecho → Abrir con → Bloc de Notas).
-
-2. Busca (Ctrl + B) esta línea:
-
-       const SHEET_ID = '';
-
-3. Pega tu ID DENTRO de las comillas. Quedará así:
-
-       const SHEET_ID = '1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9Qr0';
-
-4. Guarda el archivo (Ctrl + G) y cierra.
-
-5. Abre index.html en tu navegador. ¡Listo! Los productos
-   que pusiste en la hoja aparecerán en la web.
-
-
-----------------------------------------------------------------
-¿CÓMO AÑADIR O QUITAR PRODUCTOS DESPUÉS?
-----------------------------------------------------------------
-- Para AÑADIR:  solo añade una fila nueva en la hoja de cálculo.
-                 ¡Aparecerá sola en la web!
-- Para EDITAR:  cambia el texto/precio de cualquier celda.
-- Para QUITAR:  borra la fila completa.
-- ¡No necesitas volver a tocar el index.html nunca más!
+OPCIÓN B — Pegar una URL:
+   Pega un enlace directo a la imagen en el campo "o pegá una URL".
+   - Para Google Drive: clic derecho → Compartir →
+     "Cualquiera con el enlace" → copiar enlace.
+   - La URL debe terminar en .jpg, .png o .webp.
 
 
 ----------------------------------------------------------------
 PROBLEMAS FRECUENTES
 ----------------------------------------------------------------
-❌ "La web sale con los productos de ejemplo, no los míos"
-   → Tu SHEET_ID está vacío o mal pegado. Repasa el PASO 7.
-
-❌ "Añado un producto desde el admin, aparece en Google Sheets,
-   pero al RECARGAR la página desaparece (como si no se guardara)"
-   → CAUSA Nº1 DE SOPORTE. La hoja NO es pública para lectura.
-     El admin SÍ escribe (por eso lo ves en la hoja), pero la web
-     no puede leer de vuelta. Solución: completa el PASO 5 entero
-     (la ACCIÓN A: "Cualquiera con el enlace" es la que falta casi
-     siempre). Desde la v2, si esto ocurre, el panel de admin te
-     avisa con un mensaje claro al recargar.
-
-❌ "La hoja dice error al cargar"
-   → La hoja no es pública (PASO 5) o el nombre de la pestaña
-     no es exactamente "Productos" (PASO 1).
+❌ "La web sale sin productos / 'No hay productos disponibles'"
+   → No has agregado productos todavía, o Firebase no está
+     configurado. Revisa COMO-CONFIGURAR-ADMIN.txt.
 
 ❌ "Un producto no aparece"
-   → Probablemente la columna "Titulo" quedó vacía, o la
-     "Categoria" no coincide con las 4 permitidas.
+   → Probablemente el título quedó vacío.
 
 ❌ "La imagen no carga"
-   → El enlace no es directo a la imagen (no termina en .jpg)
-     o la foto no es pública.
+   → El enlace no es directo (no termina en .jpg) o la foto
+     no es pública.
+
+❌ "Los cambios no se guardan"
+   → Verifica que los datos de Firebase sean correctos y que
+     las reglas de Firestore permitan escritura.
+     (COMO-CONFIGURAR-ADMIN.txt, PASO 4.)
+
+
+----------------------------------------------------------------
+¿Y SI YA TENÍA PRODUCTOS EN GOOGLE SHEETS?
+----------------------------------------------------------------
+Si ya tenías productos en Google Sheets y quieres pasarlos
+a Firebase, revisa la sección "MIGRAR DESDE GOOGLE SHEETS"
+al final de la guía:
+    COMO-CONFIGURAR-ADMIN.txt
 
 ===================================================================
   ¿Dudas? Revisa esta guía paso a paso con calma. 🦊🎮
