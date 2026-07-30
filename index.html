@@ -617,11 +617,15 @@
         // ============================================================
 
         // >>> CONFIGURACIÓN DE FIREBASE <<<
-        // (Instrucciones en la guía "COMO-CONFIGURAR-ADMIN.txt")
+        // Se lee desde localStorage (igual que en admin.html).
+        // Configurá Firebase desde el panel de administración (/admin).
         const FIREBASE_CONFIG = {
-            apiKey: '',
-            authDomain: '',
-            projectId: ''
+            apiKey:      localStorage.getItem('tf_firebase_apiKey')      || '',
+            authDomain:  localStorage.getItem('tf_firebase_authDomain')   || '',
+            projectId:   localStorage.getItem('tf_firebase_projectId')     || '',
+            storageBucket:     localStorage.getItem('tf_firebase_storageBucket')     || '',
+            messagingSenderId: localStorage.getItem('tf_firebase_messagingSenderId') || '',
+            appId:       localStorage.getItem('tf_firebase_appId')         || '',
         };
 
         // Array principal que se usa para renderizar (se llena al cargar)
