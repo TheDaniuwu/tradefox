@@ -154,11 +154,80 @@
 
 <body class="bg-fox-dark text-gray-200 font-sans antialiased overflow-x-hidden">
 
+    <!-- ====================== SIDEBAR NAV ====================== -->
+    <!-- Overlay oscuro -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/60 z-[60] hidden opacity-0 transition-opacity duration-300" aria-hidden="true"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-fox-darker border-r border-white/5 z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col">
+        <!-- Header del sidebar -->
+        <div class="flex items-center justify-between p-5 border-b border-white/5">
+            <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-fox-orange flex items-center justify-center text-xl shadow-lg shadow-fox-orange/40">🦊</div>
+                <span class="text-lg font-extrabold text-white">Trade <span class="text-fox-orange">Fox</span></span>
+            </div>
+            <button id="sidebarClose" class="text-gray-400 hover:text-white transition-colors p-1" aria-label="Cerrar menú">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Links del sidebar -->
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+            <a href="#inicio" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-fox-orange/10 hover:text-fox-orange transition-all text-sm font-medium">
+                <i data-lucide="home" class="w-5 h-5"></i> Inicio
+            </a>
+            <a href="#catalogo" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-fox-orange/10 hover:text-fox-orange transition-all text-sm font-medium">
+                <i data-lucide="grid-3x3" class="w-5 h-5"></i> Catálogo
+            </a>
+            <a href="#beneficios" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-fox-orange/10 hover:text-fox-orange transition-all text-sm font-medium">
+                <i data-lucide="award" class="w-5 h-5"></i> Beneficios
+            </a>
+            <a href="#contacto" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-fox-orange/10 hover:text-fox-orange transition-all text-sm font-medium">
+                <i data-lucide="mail" class="w-5 h-5"></i> Contacto
+            </a>
+
+            <!-- Separador -->
+            <div class="border-t border-white/5 my-3"></div>
+
+            <!-- Plataformas en el sidebar -->
+            <p class="px-4 text-xs text-gray-500 uppercase tracking-widest font-semibold mb-2">Plataformas</p>
+            <a href="#catalogo" data-filter="PS3" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-fox-orange/10 hover:text-fox-orange transition-all text-sm font-medium">
+                <i data-lucide="gamepad-2" class="w-5 h-5"></i> PS3
+            </a>
+            <a href="#catalogo" data-filter="PS4" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-fox-orange/10 hover:text-fox-orange transition-all text-sm font-medium">
+                <i data-lucide="gamepad-2" class="w-5 h-5"></i> PS4
+            </a>
+            <a href="#catalogo" data-filter="PS5" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-fox-orange/10 hover:text-fox-orange transition-all text-sm font-medium">
+                <i data-lucide="gamepad-2" class="w-5 h-5"></i> PS5
+            </a>
+            <a href="#catalogo" data-filter="Xbox" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-fox-orange/10 hover:text-fox-orange transition-all text-sm font-medium">
+                <i data-lucide="gamepad-2" class="w-5 h-5"></i> Xbox
+            </a>
+        </nav>
+
+        <!-- WhatsApp del sidebar -->
+        <div class="p-4 border-t border-white/5">
+            <a href="https://wa.me/51970087905" target="_blank" rel="noopener"
+               class="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold px-5 py-3 rounded-full text-sm w-full transition-all shadow-lg shadow-green-500/20">
+                <i data-lucide="message-circle" class="w-4 h-4"></i> Contactar por WhatsApp
+            </a>
+        </div>
+    </aside>
+
     <!-- ====================== HEADER / NAV ====================== -->
     <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-fox-dark/80 backdrop-blur-lg border-b border-white/5">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 md:h-20">
-                <!-- Logo -->
+                <!-- Hamburger Menu Button (left) -->
+                <button id="menuToggle" class="text-white p-2 -ml-1 hover:bg-white/5 rounded-lg transition-colors" aria-label="Abrir menú">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+
+                <!-- Logo (center on desktop, right of hamburger on mobile) -->
                 <a href="#inicio" class="flex items-center gap-2 group">
                     <div class="w-10 h-10 rounded-xl bg-fox-orange flex items-center justify-center text-2xl shadow-lg shadow-fox-orange/40 group-hover:rotate-12 transition-transform duration-300">
                         🦊
@@ -169,12 +238,64 @@
                     </div>
                 </a>
 
-                <!-- Desktop Nav Links -->
-                <ul class="hidden lg:flex items-center gap-8 text-sm font-medium">
-                    <li><a href="#inicio" class="hover:text-fox-orange transition-colors">Inicio</a></li>
-                    <li><a href="#catalogo" class="hover:text-fox-orange transition-colors">Catálogo</a></li>
-                    <li><a href="#beneficios" class="hover:text-fox-orange transition-colors">Beneficios</a></li>
-                    <li><a href="#contacto" class="hover:text-fox-orange transition-colors">Contacto</a></li>
+                <!-- Desktop: Platform Nav with Dropdowns -->
+                <ul class="hidden lg:flex items-center gap-1 text-sm font-medium">
+                    <!-- PS3 -->
+                    <li class="relative group/platform">
+                        <button class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-gray-300 hover:text-fox-orange hover:bg-fox-orange/10 transition-all">
+                            <i data-lucide="gamepad-2" class="w-4 h-4"></i> PS3
+                            <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-hover/platform:rotate-180"></i>
+                        </button>
+                        <div class="absolute top-full left-0 mt-1 w-52 bg-fox-card border border-white/10 rounded-xl shadow-2xl shadow-black/50 py-2 opacity-0 invisible group-hover/platform:opacity-100 group-hover/platform:visible transition-all duration-200 transform translate-y-2 group-hover/platform:translate-y-0 z-50">
+                            <a href="#catalogo" data-filter-cat="Consolas" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🎮 Consolas</a>
+                            <a href="#catalogo" data-filter-cat="Juegos Físicos" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">💿 Juegos Físicos</a>
+                            <a href="#catalogo" data-filter-cat="Juegos Digitales" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">📥 Juegos Digitales</a>
+                            <a href="#catalogo" data-filter-cat="Mandos" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🕹️ Mandos</a>
+                            <a href="#catalogo" data-filter-cat="Accesorios" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🎧 Artículos</a>
+                        </div>
+                    </li>
+                    <!-- PS4 -->
+                    <li class="relative group/platform">
+                        <button class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-gray-300 hover:text-fox-orange hover:bg-fox-orange/10 transition-all">
+                            <i data-lucide="gamepad-2" class="w-4 h-4"></i> PS4
+                            <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-hover/platform:rotate-180"></i>
+                        </button>
+                        <div class="absolute top-full left-0 mt-1 w-52 bg-fox-card border border-white/10 rounded-xl shadow-2xl shadow-black/50 py-2 opacity-0 invisible group-hover/platform:opacity-100 group-hover/platform:visible transition-all duration-200 transform translate-y-2 group-hover/platform:translate-y-0 z-50">
+                            <a href="#catalogo" data-filter-cat="Consolas" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🎮 Consolas</a>
+                            <a href="#catalogo" data-filter-cat="Juegos Físicos" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">💿 Juegos Físicos</a>
+                            <a href="#catalogo" data-filter-cat="Juegos Digitales" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">📥 Juegos Digitales</a>
+                            <a href="#catalogo" data-filter-cat="Mandos" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🕹️ Mandos</a>
+                            <a href="#catalogo" data-filter-cat="Accesorios" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🎧 Artículos</a>
+                        </div>
+                    </li>
+                    <!-- PS5 -->
+                    <li class="relative group/platform">
+                        <button class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-gray-300 hover:text-fox-orange hover:bg-fox-orange/10 transition-all">
+                            <i data-lucide="gamepad-2" class="w-4 h-4"></i> PS5
+                            <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-hover/platform:rotate-180"></i>
+                        </button>
+                        <div class="absolute top-full left-0 mt-1 w-52 bg-fox-card border border-white/10 rounded-xl shadow-2xl shadow-black/50 py-2 opacity-0 invisible group-hover/platform:opacity-100 group-hover/platform:visible transition-all duration-200 transform translate-y-2 group-hover/platform:translate-y-0 z-50">
+                            <a href="#catalogo" data-filter-cat="Consolas" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🎮 Consolas</a>
+                            <a href="#catalogo" data-filter-cat="Juegos Físicos" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">💿 Juegos Físicos</a>
+                            <a href="#catalogo" data-filter-cat="Juegos Digitales" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">📥 Juegos Digitales</a>
+                            <a href="#catalogo" data-filter-cat="Mandos" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🕹️ Mandos</a>
+                            <a href="#catalogo" data-filter-cat="Accesorios" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🎧 Artículos</a>
+                        </div>
+                    </li>
+                    <!-- Xbox -->
+                    <li class="relative group/platform">
+                        <button class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-gray-300 hover:text-fox-orange hover:bg-fox-orange/10 transition-all">
+                            <i data-lucide="gamepad-2" class="w-4 h-4"></i> Xbox
+                            <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-hover/platform:rotate-180"></i>
+                        </button>
+                        <div class="absolute top-full left-0 mt-1 w-52 bg-fox-card border border-white/10 rounded-xl shadow-2xl shadow-black/50 py-2 opacity-0 invisible group-hover/platform:opacity-100 group-hover/platform:visible transition-all duration-200 transform translate-y-2 group-hover/platform:translate-y-0 z-50">
+                            <a href="#catalogo" data-filter-cat="Consolas" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🎮 Consolas</a>
+                            <a href="#catalogo" data-filter-cat="Juegos Físicos" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">💿 Juegos Físicos</a>
+                            <a href="#catalogo" data-filter-cat="Juegos Digitales" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">📥 Juegos Digitales</a>
+                            <a href="#catalogo" data-filter-cat="Mandos" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🕹️ Mandos</a>
+                            <a href="#catalogo" data-filter-cat="Accesorios" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-fox-orange hover:bg-fox-orange/5 transition-colors">🎧 Artículos</a>
+                        </div>
+                    </li>
                 </ul>
 
                 <!-- Desktop WhatsApp CTA -->
@@ -182,23 +303,6 @@
                    class="hidden md:inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold px-5 py-2.5 rounded-full text-sm transition-all shadow-lg shadow-green-500/20 hover:scale-105">
                     <i data-lucide="message-circle" class="w-4 h-4"></i>
                     WhatsApp
-                </a>
-
-                <!-- Mobile menu button -->
-                <button id="menuToggle" class="lg:hidden text-white p-2" aria-label="Abrir menú">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobileMenu" class="lg:hidden hidden pb-4 border-t border-white/5 pt-4 space-y-3">
-                <a href="#inicio" class="block px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">Inicio</a>
-                <a href="#catalogo" class="block px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">Catálogo</a>
-                <a href="#beneficios" class="block px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">Beneficios</a>
-                <a href="#contacto" class="block px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">Contacto</a>
-                <a href="https://wa.me/51970087905" target="_blank" rel="noopener"
-                   class="flex items-center justify-center gap-2 bg-[#25D366] text-white font-semibold px-5 py-3 rounded-full text-sm">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i> Contactar por WhatsApp
                 </a>
             </div>
         </nav>
@@ -726,7 +830,7 @@
                         <div class="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
                             <div>
                                 <span class="text-gray-500 text-xs block">Precio</span>
-                                <span class="text-fox-orange font-extrabold text-xl">${product.price}</span>
+                                <span class="text-fox-orange font-extrabold text-xl">S/. ${product.price}</span>
                             </div>
                             <a href="${buildWhatsAppLink(product.title)}" target="_blank" rel="noopener"
                                class="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white text-sm font-semibold px-4 py-2.5 rounded-full transition-all hover:scale-105 shadow-lg shadow-green-500/20">
@@ -743,15 +847,59 @@
             lucide.createIcons();
         }
 
-        // ===== Mobile menu toggle =====
+        // ===== Sidebar toggle =====
         const menuToggle = document.getElementById('menuToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        menuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarClose = document.getElementById('sidebarClose');
+
+        function openSidebar() {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            sidebarOverlay.classList.remove('hidden');
+            requestAnimationFrame(() => sidebarOverlay.classList.add('opacity-100'));
+            sidebarOverlay.classList.remove('opacity-0');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            sidebarOverlay.classList.add('opacity-0');
+            sidebarOverlay.classList.remove('opacity-100');
+            setTimeout(() => sidebarOverlay.classList.add('hidden'), 300);
+            document.body.style.overflow = '';
+        }
+
+        menuToggle.addEventListener('click', openSidebar);
+        sidebarClose.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // Cerrar sidebar al hacer click en un enlace
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', () => closeSidebar());
         });
-        // Cerrar menú al hacer click en un enlace
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+
+        // ===== Dropdown links: filtrar por categoría al hacer click =====
+        document.querySelectorAll('[data-filter-cat]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const cat = link.dataset.filterCat;
+                // Esperar a que renderProducts esté disponible
+                activeCategory = cat;
+                renderFilters();
+                renderProducts();
+            });
+        });
+
+        // ===== Sidebar platform links: scroll a catálogo =====
+        document.querySelectorAll('[data-filter]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                // Si tiene data-filter con plataforma, scrollea al catálogo
+                // y activa "Todos" como filtro
+                activeCategory = 'Todos';
+                renderFilters();
+                renderProducts();
+            });
         });
 
         // ===== Header scroll effect =====
