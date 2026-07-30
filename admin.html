@@ -238,6 +238,7 @@
                         <tr class="border-b border-white/5">
                             <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4">Imagen</th>
                             <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4">Producto</th>
+                            <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4 hidden lg:table-cell">Plataforma</th>
                             <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4 hidden md:table-cell">Categoría</th>
                             <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4 hidden sm:table-cell">Estado</th>
                             <th class="text-left text-gray-500 font-semibold text-xs uppercase tracking-wider px-5 py-4">Precio</th>
@@ -279,6 +280,18 @@
                            class="w-full px-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-fox-orange/50 focus:ring-1 focus:ring-fox-orange/30 transition-all" />
                 </div>
 
+                <!-- Plataforma -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Plataforma *</label>
+                    <select id="fieldPlatform" required
+                            class="w-full px-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-fox-orange/50 transition-all cursor-pointer">
+                        <option value="PS3">PS3</option>
+                        <option value="PS4">PS4</option>
+                        <option value="PS5">PS5</option>
+                        <option value="Xbox">Xbox</option>
+                    </select>
+                </div>
+
                 <!-- Categoría y Estado -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -287,6 +300,7 @@
                                 class="w-full px-4 py-2.5 bg-fox-darker border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-fox-orange/50 transition-all cursor-pointer">
                             <option value="Consolas">Consolas</option>
                             <option value="Juegos Físicos">Juegos Físicos</option>
+                            <option value="Juegos Digitales">Juegos Digitales</option>
                             <option value="Mandos">Mandos</option>
                             <option value="Accesorios">Accesorios</option>
                         </select>
@@ -474,7 +488,8 @@
         let deletingId = null;
         let currentImage = '';
 
-        const CATEGORIES = ['Consolas', 'Juegos Físicos', 'Mandos', 'Accesorios'];
+        const CATEGORIES = ['Consolas', 'Juegos Físicos', 'Juegos Digitales', 'Mandos', 'Accesorios'];
+        const PLATFORMS = ['PS3', 'PS4', 'PS5', 'Xbox'];
         const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&h=400&fit=crop';
 
         // Convierte enlaces de Google Drive (que NO sirven como <img src>)
@@ -755,6 +770,7 @@
                         condition: cells[2]?.v?.toString().trim() || 'Nuevo',
                         price: cells[3]?.v?.toString().trim() || 'Consultar',
                         image: normalizeImageUrl(cells[4]?.v?.toString().trim()) || DEFAULT_IMAGE,
+                        platform: cells[5]?.v?.toString().trim() || '',
                     });
                 });
             } catch (err) {
@@ -774,7 +790,7 @@
             }
 
             try {
-                const payload = productsData.map(p => [p.title, p.category, p.condition, p.price, p.image]);
+                const payload = productsData.map(p => [p.title, p.category, p.condition, p.price, p.image, p.platform]);
                 const res = await fetch(cfg.scriptUrl, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -836,7 +852,7 @@
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="text-center py-12 text-gray-500">
+                        <td colspan="7" class="text-center py-12 text-gray-500">
                             No se encontraron productos con esa búsqueda.
                         </td>
                     </tr>`;
@@ -848,6 +864,9 @@
                 const badgeClass = isNuevo
                     ? 'bg-green-500/15 text-green-400'
                     : 'bg-fox-orange/15 text-fox-orange';
+                const platformBadge = p.platform
+                    ? `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-400">${p.platform}</span>`
+                    : '<span class="text-gray-600 text-xs">—</span>';
                 return `
                 <tr class="product-row border-b border-white/5 transition-colors">
                     <td class="px-5 py-3">
@@ -858,7 +877,10 @@
                     </td>
                     <td class="px-5 py-3">
                         <div class="font-semibold text-white">${escapeHtml(p.title)}</div>
-                        <div class="text-xs text-gray-500 md:hidden mt-0.5">${p.category}</div>
+                        <div class="text-xs text-gray-500 md:hidden mt-0.5">${p.category}${p.platform ? ' · ' + p.platform : ''}</div>
+                    </td>
+                    <td class="px-5 py-3 hidden lg:table-cell">
+                        ${platformBadge}
                     </td>
                     <td class="px-5 py-3 hidden md:table-cell">
                         <span class="text-gray-400 text-sm">${p.category}</span>
@@ -957,6 +979,7 @@
 
         function fillForm(product) {
             document.getElementById('fieldTitle').value = product.title;
+            document.getElementById('fieldPlatform').value = product.platform || 'PS3';
             document.getElementById('fieldCategory').value = product.category;
             document.getElementById('fieldCondition').value = product.condition;
             document.getElementById('fieldPrice').value = product.price;
@@ -974,6 +997,7 @@
             const category = document.getElementById('fieldCategory').value;
             const condition = document.getElementById('fieldCondition').value;
             const price = document.getElementById('fieldPrice').value.trim();
+            const platform = document.getElementById('fieldPlatform').value;
             let image = document.getElementById('fieldImage').value.trim() || DEFAULT_IMAGE;
             image = normalizeImageUrl(image);
 
@@ -989,6 +1013,7 @@
                 condition,
                 price,
                 image,
+                platform,
             };
 
             products.push(newProduct);
@@ -1007,6 +1032,7 @@
             const category = document.getElementById('fieldCategory').value;
             const condition = document.getElementById('fieldCondition').value;
             const price = document.getElementById('fieldPrice').value.trim();
+            const platform = document.getElementById('fieldPlatform').value;
             let image = document.getElementById('fieldImage').value.trim() || products[idx].image;
             image = normalizeImageUrl(image);
 
@@ -1015,7 +1041,7 @@
                 return;
             }
 
-            products[idx] = { ...products[idx], title, category, condition, price, image };
+            products[idx] = { ...products[idx], title, category, condition, price, image, platform };
             saveToSheet(products).then(ok => {
                 if (ok) showToast('Producto actualizado correctamente.');
             });

@@ -722,7 +722,8 @@
                         category: (cells[1]?.v?.toString().trim() || 'Otros'),
                         condition: (cells[2]?.v?.toString().trim() || 'Nuevo'),
                         price: (cells[3]?.v?.toString().trim() || 'Consultar'),
-                        image: normalizeImageUrl(cells[4]?.v?.toString().trim()) || 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&h=400&fit=crop'
+                        image: normalizeImageUrl(cells[4]?.v?.toString().trim()) || 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&h=400&fit=crop',
+                        platform: (cells[5]?.v?.toString().trim() || '')
                     });
                 });
 
@@ -739,11 +740,13 @@
         // ===== Renderizado de filtros =====
         const filtersContainer = document.getElementById('filters');
         let activeCategory = 'Todos';
+        let activePlatform = ''; // '' = sin filtro de plataforma
 
         const categoryIcons = {
             'Todos': 'layers',
             'Consolas': 'gamepad-2',
             'Juegos Físicos': 'disc',
+            'Juegos Digitales': 'download',
             'Mandos': 'joystick',
             'Accesorios': 'headphones'
         };
@@ -758,6 +761,7 @@
                 btn.innerHTML = `<i data-lucide="${categoryIcons[cat] || 'tag'}" class="w-4 h-4"></i> ${cat}`;
                 btn.addEventListener('click', () => {
                     activeCategory = cat;
+                    activePlatform = '';
                     renderFilters();
                     renderProducts();
                 });
@@ -772,9 +776,17 @@
         const emptyStateText = document.getElementById('emptyStateText');
 
         function renderProducts() {
-            const filtered = activeCategory === 'Todos'
-                ? products
-                : products.filter(p => p.category === activeCategory);
+            let filtered = products;
+
+            // Filtrar por plataforma si está seleccionada
+            if (activePlatform) {
+                filtered = filtered.filter(p => p.platform === activePlatform);
+            }
+
+            // Filtrar por categoría
+            if (activeCategory !== 'Todos') {
+                filtered = filtered.filter(p => p.category === activeCategory);
+            }
 
             productsGrid.innerHTML = '';
 
@@ -880,22 +892,32 @@
             link.addEventListener('click', () => closeSidebar());
         });
 
-        // ===== Dropdown links: filtrar por categoría al hacer click =====
+        // ===== Dropdown links: filtrar por plataforma + categoría al hacer click =====
         document.querySelectorAll('[data-filter-cat]').forEach(link => {
             link.addEventListener('click', (e) => {
                 const cat = link.dataset.filterCat;
-                // Esperar a que renderProducts esté disponible
+                // Buscar qué plataforma es el dropdown padre
+                const parentLi = link.closest('li');
+                const parentBtn = parentLi?.querySelector('button');
+                let platform = '';
+                if (parentBtn) {
+                    const btnText = parentBtn.textContent.trim();
+                    ['PS3', 'PS4', 'PS5', 'Xbox'].forEach(plat => {
+                        if (btnText.includes(plat)) platform = plat;
+                    });
+                }
+                activePlatform = platform;
                 activeCategory = cat;
                 renderFilters();
                 renderProducts();
             });
         });
 
-        // ===== Sidebar platform links: scroll a catálogo =====
+        // ===== Sidebar platform links: filtrar por plataforma =====
         document.querySelectorAll('[data-filter]').forEach(link => {
             link.addEventListener('click', (e) => {
-                // Si tiene data-filter con plataforma, scrollea al catálogo
-                // y activa "Todos" como filtro
+                const platform = link.dataset.filter;
+                activePlatform = platform;
                 activeCategory = 'Todos';
                 renderFilters();
                 renderProducts();
